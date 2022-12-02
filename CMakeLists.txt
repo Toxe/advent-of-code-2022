@@ -18,3 +18,6 @@ include(cmake/StaticAnalyzers.cmake)
 
 # sanitizers
 include(cmake/Sanitizers.cmake)
+
+add_subdirectory(src/shared)
+add_subdirectory(src/day01)
