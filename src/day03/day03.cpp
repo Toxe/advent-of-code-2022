@@ -29,16 +29,13 @@ int day03_part2(const std::vector<std::string>& lines)
 
     for (auto it = lines.cbegin(); it != lines.cend(); std::advance(it, 3)) {
         const std::string_view line1{*it};
-        std::string line2{*(it + 1)};
-        std::string line3{*(it + 2)};
-
-        std::sort(line2.begin(), line2.end());
-        std::sort(line3.begin(), line3.end());
+        const std::string_view line2{*(it + 1)};
+        const std::string_view line3{*(it + 2)};
 
         // find a character that all three lines contain
         const auto pos = std::find_if(line1.begin(), line1.end(),
             [&](const char c) {
-                return std::binary_search(line2.begin(), line2.end(), c) && std::binary_search(line3.begin(), line3.end(), c);
+                return line2.find(c) != std::string_view::npos && line3.find(c) != std::string_view::npos;
             });
 
         sum += priority(*pos);
