@@ -21,3 +21,4 @@ include(cmake/Sanitizers.cmake)
 
 add_subdirectory(src/shared)
 add_subdirectory(src/day01)
+add_subdirectory(src/day02)

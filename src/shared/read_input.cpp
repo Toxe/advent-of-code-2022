@@ -24,3 +24,15 @@ std::optional<std::ifstream> open_input_file(std::span<const char*> args)
 
     return file;
 }
+
+std::vector<std::string> read_lines(std::istream& input)
+{
+    std::vector<std::string> lines;
+    std::string line;
+
+    while (std::getline(input, line))
+        if (!line.empty())
+            lines.push_back(line);
+
+    return lines;
+}

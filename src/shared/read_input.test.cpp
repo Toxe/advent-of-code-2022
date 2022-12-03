@@ -62,3 +62,42 @@ TEST_CASE("open_input_file()")
         CHECK(input_file.has_value() == false);
     }
 }
+
+TEST_CASE("read_lines()")
+{
+    SECTION("reads all lines")
+    {
+        std::istringstream input{
+            "line 1\n"
+            "line 2\n"
+            "line 3"};
+
+        const auto lines = read_lines(input);
+
+        CHECK_THAT(lines, Catch::Matchers::SizeIs(3));
+        CHECK_THAT(lines[0], Catch::Matchers::Equals("line 1"));
+        CHECK_THAT(lines[1], Catch::Matchers::Equals("line 2"));
+        CHECK_THAT(lines[2], Catch::Matchers::Equals("line 3"));
+    }
+
+    SECTION("ignores newlines")
+    {
+        std::istringstream input{
+            "\n"
+            "aaa\n"
+            "\n"
+            "\n"
+            "bbb\n"
+            "\n"
+            "ccc"
+            "\n"
+            "\n"};
+
+        const auto lines = read_lines(input);
+
+        CHECK_THAT(lines, Catch::Matchers::SizeIs(3));
+        CHECK_THAT(lines[0], Catch::Matchers::Equals("aaa"));
+        CHECK_THAT(lines[1], Catch::Matchers::Equals("bbb"));
+        CHECK_THAT(lines[2], Catch::Matchers::Equals("ccc"));
+    }
+}
