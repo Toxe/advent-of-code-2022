@@ -1,6 +1,6 @@
 add_library(LIB_shared
         read_grouped_numbers.cpp
-        read_grouped_numbers.cpp
+        read_grouped_numbers.hpp
         read_input.cpp
         read_input.hpp
 )
