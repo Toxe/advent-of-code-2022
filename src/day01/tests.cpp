@@ -2,32 +2,22 @@
 
 #include "day01.hpp"
 
-TEST_CASE("part 1")
+TEST_CASE("works with example input")
 {
-    SECTION("works with example input")
-    {
-        const GroupedNumbers grouped_numbers = {
-            {1000, 2000, 3000},
-            {4000},
-            {5000, 6000},
-            {7000, 8000, 9000},
-            {10000}};
+    const GroupedNumbers grouped_numbers = {
+        {1000, 2000, 3000},
+        {4000},
+        {5000, 6000},
+        {7000, 8000, 9000},
+        {10000}};
 
+    SECTION("part 1")
+    {
         CHECK(day01_part1(grouped_numbers) == 24000);
     }
-}
 
-TEST_CASE("part 2")
-{
-    SECTION("works with example input")
+    SECTION("part 2")
     {
-        const GroupedNumbers grouped_numbers = {
-            {1000, 2000, 3000},
-            {4000},
-            {5000, 6000},
-            {7000, 8000, 9000},
-            {10000}};
-
         CHECK(day01_part2(grouped_numbers) == 45000);
     }
 }

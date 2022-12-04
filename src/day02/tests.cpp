@@ -2,28 +2,20 @@
 
 #include "day02.hpp"
 
-TEST_CASE("part 1")
+TEST_CASE("works with example input")
 {
-    SECTION("works with example input")
-    {
-        const std::vector<std::string> lines = {
-            "A Y",
-            "B X",
-            "C Z"};
+    const std::vector<std::string> lines = {
+        "A Y",
+        "B X",
+        "C Z"};
 
+    SECTION("part 1")
+    {
         CHECK(day02_part1(lines) == 15);
     }
-}
 
-TEST_CASE("part 2")
-{
-    SECTION("works with example input")
+    SECTION("part 2")
     {
-        const std::vector<std::string> lines = {
-            "A Y",
-            "B X",
-            "C Z"};
-
         CHECK(day02_part2(lines) == 12);
     }
 }
