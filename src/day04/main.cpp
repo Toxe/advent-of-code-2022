@@ -11,7 +11,7 @@ int main(int argc, const char* argv[])
     if (!input_file)
         return 1;
 
-    const std::vector<std::string> input = read_lines(*input_file);
+    const std::vector<std::string> input = read_lines_and_remove_empty_lines(*input_file);
 
     std::cout << "day 04, part 1: " << day04_part1(input) << '\n';
     std::cout << "day 04, part 2: " << day04_part2(input) << '\n';

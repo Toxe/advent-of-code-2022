@@ -63,7 +63,7 @@ TEST_CASE("open_input_file()")
     }
 }
 
-TEST_CASE("read_lines()")
+TEST_CASE("read_lines_and_preserve_empty_lines()")
 {
     SECTION("reads all lines")
     {
@@ -72,7 +72,7 @@ TEST_CASE("read_lines()")
             "line 2\n"
             "line 3"};
 
-        const auto lines = read_lines(input);
+        const auto lines = read_lines_and_preserve_empty_lines(input);
 
         CHECK_THAT(lines, Catch::Matchers::SizeIs(3));
         CHECK_THAT(lines[0], Catch::Matchers::Equals("line 1"));
@@ -80,7 +80,22 @@ TEST_CASE("read_lines()")
         CHECK_THAT(lines[2], Catch::Matchers::Equals("line 3"));
     }
 
-    SECTION("ignores newlines")
+    SECTION("handles newline in last line")
+    {
+        std::istringstream input{
+            "line 1\n"
+            "line 2\n"
+            "line 3\n"};
+
+        const auto lines = read_lines_and_preserve_empty_lines(input);
+
+        CHECK_THAT(lines, Catch::Matchers::SizeIs(3));
+        CHECK_THAT(lines[0], Catch::Matchers::Equals("line 1"));
+        CHECK_THAT(lines[1], Catch::Matchers::Equals("line 2"));
+        CHECK_THAT(lines[2], Catch::Matchers::Equals("line 3"));
+    }
+
+    SECTION("preserves empty lines")
     {
         std::istringstream input{
             "\n"
@@ -89,11 +104,71 @@ TEST_CASE("read_lines()")
             "\n"
             "bbb\n"
             "\n"
-            "ccc"
+            "ccc\n"
             "\n"
             "\n"};
 
-        const auto lines = read_lines(input);
+        const auto lines = read_lines_and_preserve_empty_lines(input);
+
+        CHECK_THAT(lines, Catch::Matchers::SizeIs(9));
+        CHECK_THAT(lines[0], Catch::Matchers::Equals(""));
+        CHECK_THAT(lines[1], Catch::Matchers::Equals("aaa"));
+        CHECK_THAT(lines[2], Catch::Matchers::Equals(""));
+        CHECK_THAT(lines[3], Catch::Matchers::Equals(""));
+        CHECK_THAT(lines[4], Catch::Matchers::Equals("bbb"));
+        CHECK_THAT(lines[5], Catch::Matchers::Equals(""));
+        CHECK_THAT(lines[6], Catch::Matchers::Equals("ccc"));
+        CHECK_THAT(lines[7], Catch::Matchers::Equals(""));
+        CHECK_THAT(lines[8], Catch::Matchers::Equals(""));
+    }
+}
+
+TEST_CASE("read_lines_and_remove_empty_lines()")
+{
+    SECTION("reads all lines")
+    {
+        std::istringstream input{
+            "line 1\n"
+            "line 2\n"
+            "line 3"};
+
+        const auto lines = read_lines_and_remove_empty_lines(input);
+
+        CHECK_THAT(lines, Catch::Matchers::SizeIs(3));
+        CHECK_THAT(lines[0], Catch::Matchers::Equals("line 1"));
+        CHECK_THAT(lines[1], Catch::Matchers::Equals("line 2"));
+        CHECK_THAT(lines[2], Catch::Matchers::Equals("line 3"));
+    }
+
+    SECTION("handles newline in last line")
+    {
+        std::istringstream input{
+            "line 1\n"
+            "line 2\n"
+            "line 3\n"};
+
+        const auto lines = read_lines_and_remove_empty_lines(input);
+
+        CHECK_THAT(lines, Catch::Matchers::SizeIs(3));
+        CHECK_THAT(lines[0], Catch::Matchers::Equals("line 1"));
+        CHECK_THAT(lines[1], Catch::Matchers::Equals("line 2"));
+        CHECK_THAT(lines[2], Catch::Matchers::Equals("line 3"));
+    }
+
+    SECTION("removes empty lines")
+    {
+        std::istringstream input{
+            "\n"
+            "aaa\n"
+            "\n"
+            "\n"
+            "bbb\n"
+            "\n"
+            "ccc\n"
+            "\n"
+            "\n"};
+
+        const auto lines = read_lines_and_remove_empty_lines(input);
 
         CHECK_THAT(lines, Catch::Matchers::SizeIs(3));
         CHECK_THAT(lines[0], Catch::Matchers::Equals("aaa"));
