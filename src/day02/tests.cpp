@@ -7,7 +7,8 @@ TEST_CASE("works with example input")
     const std::vector<std::string> lines = {
         "A Y",
         "B X",
-        "C Z"};
+        "C Z",
+    };
 
     SECTION("part 1")
     {

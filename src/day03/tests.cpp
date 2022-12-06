@@ -10,7 +10,8 @@ TEST_CASE("works with example input")
         "PmmdzqPrVvPwwTWBwg",
         "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
         "ttgJtRGJQctTZtZT",
-        "CrZsJsPPZsGzwwsLwLmpwMDw"};
+        "CrZsJsPPZsGzwwsLwLmpwMDw",
+    };
 
     SECTION("part 1")
     {

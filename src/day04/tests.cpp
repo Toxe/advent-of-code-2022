@@ -10,7 +10,8 @@ TEST_CASE("works with example input")
         "5-7,7-9",
         "2-8,3-7",
         "6-6,4-6",
-        "2-6,4-8"};
+        "2-6,4-8",
+    };
 
     SECTION("part 1")
     {

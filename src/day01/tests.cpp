@@ -9,7 +9,8 @@ TEST_CASE("works with example input")
         {4000},
         {5000, 6000},
         {7000, 8000, 9000},
-        {10000}};
+        {10000},
+    };
 
     SECTION("part 1")
     {
