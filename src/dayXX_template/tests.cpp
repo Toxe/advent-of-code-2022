@@ -6,7 +6,8 @@ TEST_CASE("works with example input")
 {
     const std::vector<std::string> lines = {
         "line1",
-        "line2"};
+        "line2",
+    };
 
     SECTION("part 1")
     {
