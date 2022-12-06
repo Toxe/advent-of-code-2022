@@ -25,6 +25,15 @@ std::optional<std::ifstream> open_input_file(std::span<const char*> args)
     return file;
 }
 
+std::string read_single_line(std::istream& input)
+{
+    std::string line;
+
+    std::getline(input, line);
+
+    return line;
+}
+
 std::vector<std::string> read_lines_and_preserve_empty_lines(std::istream& input)
 {
     std::vector<std::string> lines;

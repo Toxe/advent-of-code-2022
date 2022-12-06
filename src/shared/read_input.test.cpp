@@ -63,6 +63,40 @@ TEST_CASE("open_input_file()")
     }
 }
 
+TEST_CASE("read_single_line()")
+{
+    SECTION("reads one line")
+    {
+        std::istringstream input{"line"};
+
+        CHECK_THAT(read_single_line(input), Catch::Matchers::Equals("line"));
+    }
+
+    SECTION("handles newline at the end")
+    {
+        std::istringstream input{"line\n"};
+
+        CHECK_THAT(read_single_line(input), Catch::Matchers::Equals("line"));
+    }
+
+    SECTION("ignores additional empty lines and newlines")
+    {
+        std::istringstream input{"line\n\n\n"};
+
+        CHECK_THAT(read_single_line(input), Catch::Matchers::Equals("line"));
+    }
+
+    SECTION("reads only the first line")
+    {
+        std::istringstream input{
+            "line\n"
+            "line 2\n"
+            "line 3\n"};
+
+        CHECK_THAT(read_single_line(input), Catch::Matchers::Equals("line"));
+    }
+}
+
 TEST_CASE("read_lines_and_preserve_empty_lines()")
 {
     SECTION("reads all lines")
