@@ -14,7 +14,7 @@ if (BUILD_TESTING)
     target_compile_features(day06_tests PUBLIC cxx_std_20)
     target_compile_options(day06_tests PRIVATE ${SANITIZER_COMPILE_OPTIONS} ${DEFAULT_COMPILER_OPTIONS} ${DEFAULT_COMPILER_WARNINGS})
     target_link_options(day06_tests PRIVATE ${SANITIZER_LINK_OPTIONS})
-    target_link_libraries(day06_tests PRIVATE ${SANITIZER_LINK_LIBRARIES} Catch2::Catch2WithMain)
+    target_link_libraries(day06_tests PRIVATE ${SANITIZER_LINK_LIBRARIES} LIB_shared Catch2::Catch2WithMain)
 
     add_test(NAME day06_tests COMMAND day06_tests)
 endif ()
