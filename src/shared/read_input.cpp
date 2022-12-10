@@ -3,6 +3,11 @@
 #include <filesystem>
 #include <iostream>
 
+bool file_exists(const std::string& filename)
+{
+    return std::filesystem::exists(filename);
+}
+
 std::optional<std::string> get_input_filename(const std::span<const char*>& args)
 {
     if (args.size() < 2) {
@@ -18,7 +23,7 @@ std::optional<std::ifstream> open_input_file(const std::optional<std::string>& i
     if (!input_filename)
         return std::nullopt;
 
-    if (!std::filesystem::exists(*input_filename)) {
+    if (!file_exists(*input_filename)) {
         std::cerr << "input file not found: " << *input_filename << '\n';
         return std::nullopt;
     }

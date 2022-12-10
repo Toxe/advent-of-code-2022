@@ -31,6 +31,23 @@ struct TempFile {
     std::ofstream file;
 };
 
+TEST_CASE("file_exists()")
+{
+    SECTION("returns true if file exists")
+    {
+        const TempFile tmpfile;
+
+        CHECK(file_exists(tmpfile.name));
+    }
+
+    SECTION("returns false if file does not exist")
+    {
+        const char* tmp_filename = tmpnam(nullptr);
+
+        CHECK(file_exists(tmp_filename) == false);
+    }
+}
+
 TEST_CASE("get_input_filename()")
 {
     SECTION("needs at least two command line arguments")
