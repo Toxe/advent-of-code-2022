@@ -14,6 +14,10 @@ target_link_options(LIB_shared PRIVATE ${SANITIZER_LINK_OPTIONS})
 target_link_libraries(LIB_shared PRIVATE ${SANITIZER_LINK_LIBRARIES})
 target_include_directories(LIB_shared INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC"))
+    target_compile_options(LIB_shared PUBLIC /D_CRT_SECURE_NO_WARNINGS)
+endif ()
+
 # Tests
 if (BUILD_TESTING)
     add_executable(lib_shared_tests
