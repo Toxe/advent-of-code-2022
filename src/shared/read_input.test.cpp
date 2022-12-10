@@ -2,8 +2,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include <cstdio>
-#include <filesystem>
 #include <sstream>
 #include <vector>
 
@@ -12,24 +10,7 @@
 #include "catch2/matchers/catch_matchers_string.hpp"
 
 #include "read_input.hpp"
-
-struct TempFile {
-    TempFile() : name(tmpnam(nullptr))
-    {
-        file = std::ofstream{name, std::ios::binary};
-    }
-
-    ~TempFile()
-    {
-        if (file.is_open()) {
-            file.close();
-            std::filesystem::remove(name);
-        }
-    }
-
-    std::string name;
-    std::ofstream file;
-};
+#include "test_helpers.hpp"
 
 TEST_CASE("file_exists()")
 {
@@ -42,7 +23,7 @@ TEST_CASE("file_exists()")
 
     SECTION("returns false if file does not exist")
     {
-        const char* tmp_filename = tmpnam(nullptr);
+        const char* tmp_filename = std::tmpnam(nullptr);
 
         CHECK(file_exists(tmp_filename) == false);
     }
@@ -75,7 +56,7 @@ TEST_CASE("open_input_file()")
 
     SECTION("file must exist")
     {
-        const char* tmp_filename = tmpnam(nullptr);
+        const char* tmp_filename = std::tmpnam(nullptr);
 
         std::vector<const char*> args{"program", tmp_filename};
         const auto input_filename = get_input_filename(args);

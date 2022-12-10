@@ -3,6 +3,8 @@ add_library(LIB_shared
         read_grouped_numbers.hpp
         read_input.cpp
         read_input.hpp
+        test_helpers.cpp
+        test_helpers.hpp
 )
 
 set_target_properties(LIB_shared PROPERTIES CXX_EXTENSIONS OFF)
@@ -17,6 +19,7 @@ if (BUILD_TESTING)
     add_executable(lib_shared_tests
             read_grouped_numbers.test.cpp
             read_input.test.cpp
+            test_helpers.test.cpp
     )
 
     set_target_properties(lib_shared_tests PROPERTIES CXX_EXTENSIONS OFF)
