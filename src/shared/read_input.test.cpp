@@ -31,25 +31,29 @@ struct TempFile {
     std::ofstream file;
 };
 
-TEST_CASE("open_input_file()")
+TEST_CASE("get_input_filename()")
 {
     SECTION("needs at least two command line arguments")
     {
         std::vector<const char*> args{"program"};
-        auto input_file = open_input_file(args);
+        const auto input_filename = get_input_filename(args);
 
-        CHECK(input_file.has_value() == false);
+        CHECK(input_filename.has_value() == false);
     }
+}
 
+TEST_CASE("open_input_file()")
+{
     SECTION("returns an open input file stream")
     {
         TempFile tmpfile;
 
         std::vector<const char*> args{"program", tmpfile.name.data()};
-        auto input_file = open_input_file(args);
+        const auto input_filename = get_input_filename(args);
+        auto input_stream = open_input_file(input_filename);
 
-        CHECK(input_file.has_value());
-        CHECK(input_file->is_open());
+        CHECK(input_stream.has_value());
+        CHECK(input_stream->is_open());
     }
 
     SECTION("file must exist")
@@ -57,9 +61,10 @@ TEST_CASE("open_input_file()")
         const char* tmp_filename = tmpnam(nullptr);
 
         std::vector<const char*> args{"program", tmp_filename};
-        auto input_file = open_input_file(args);
+        const auto input_filename = get_input_filename(args);
+        auto input_stream = open_input_file(input_filename);
 
-        CHECK(input_file.has_value() == false);
+        CHECK(input_stream.has_value() == false);
     }
 }
 
