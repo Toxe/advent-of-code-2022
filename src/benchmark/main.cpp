@@ -15,6 +15,7 @@
 #include "../day07/day07.hpp"
 #include "../day08/day08.hpp"
 #include "../day09/day09.hpp"
+#include "../day10/day10.hpp"
 
 static void BM_example_input_day01_part1(benchmark::State& state)
 {
@@ -400,6 +401,329 @@ static void BM_example_input_day09_part2(benchmark::State& state)
     }
 }
 
+static void BM_example_input_day10_part1(benchmark::State& state)
+{
+    const std::vector<std::string> lines = {
+        "addx 15",
+        "addx -11",
+        "addx 6",
+        "addx -3",
+        "addx 5",
+        "addx -1",
+        "addx -8",
+        "addx 13",
+        "addx 4",
+        "noop",
+        "addx -1",
+        "addx 5",
+        "addx -1",
+        "addx 5",
+        "addx -1",
+        "addx 5",
+        "addx -1",
+        "addx 5",
+        "addx -1",
+        "addx -35",
+        "addx 1",
+        "addx 24",
+        "addx -19",
+        "addx 1",
+        "addx 16",
+        "addx -11",
+        "noop",
+        "noop",
+        "addx 21",
+        "addx -15",
+        "noop",
+        "noop",
+        "addx -3",
+        "addx 9",
+        "addx 1",
+        "addx -3",
+        "addx 8",
+        "addx 1",
+        "addx 5",
+        "noop",
+        "noop",
+        "noop",
+        "noop",
+        "noop",
+        "addx -36",
+        "noop",
+        "addx 1",
+        "addx 7",
+        "noop",
+        "noop",
+        "noop",
+        "addx 2",
+        "addx 6",
+        "noop",
+        "noop",
+        "noop",
+        "noop",
+        "noop",
+        "addx 1",
+        "noop",
+        "noop",
+        "addx 7",
+        "addx 1",
+        "noop",
+        "addx -13",
+        "addx 13",
+        "addx 7",
+        "noop",
+        "addx 1",
+        "addx -33",
+        "noop",
+        "noop",
+        "noop",
+        "addx 2",
+        "noop",
+        "noop",
+        "noop",
+        "addx 8",
+        "noop",
+        "addx -1",
+        "addx 2",
+        "addx 1",
+        "noop",
+        "addx 17",
+        "addx -9",
+        "addx 1",
+        "addx 1",
+        "addx -3",
+        "addx 11",
+        "noop",
+        "noop",
+        "addx 1",
+        "noop",
+        "addx 1",
+        "noop",
+        "noop",
+        "addx -13",
+        "addx -19",
+        "addx 1",
+        "addx 3",
+        "addx 26",
+        "addx -30",
+        "addx 12",
+        "addx -1",
+        "addx 3",
+        "addx 1",
+        "noop",
+        "noop",
+        "noop",
+        "addx -9",
+        "addx 18",
+        "addx 1",
+        "addx 2",
+        "noop",
+        "noop",
+        "addx 9",
+        "noop",
+        "noop",
+        "noop",
+        "addx -1",
+        "addx 2",
+        "addx -37",
+        "addx 1",
+        "addx 3",
+        "noop",
+        "addx 15",
+        "addx -21",
+        "addx 22",
+        "addx -6",
+        "addx 1",
+        "noop",
+        "addx 2",
+        "addx 1",
+        "noop",
+        "addx -10",
+        "noop",
+        "noop",
+        "addx 20",
+        "addx 1",
+        "addx 2",
+        "addx 2",
+        "addx -6",
+        "addx -11",
+        "noop",
+        "noop",
+        "noop",
+    };
+
+    for (auto _ : state) {
+        const auto result = day10_part1(lines);
+        benchmark::DoNotOptimize(result);
+        assert(result == 13140);
+    }
+}
+
+static void BM_example_input_day10_part2(benchmark::State& state)
+{
+    const std::vector<std::string> lines = {
+        "addx 15",
+        "addx -11",
+        "addx 6",
+        "addx -3",
+        "addx 5",
+        "addx -1",
+        "addx -8",
+        "addx 13",
+        "addx 4",
+        "noop",
+        "addx -1",
+        "addx 5",
+        "addx -1",
+        "addx 5",
+        "addx -1",
+        "addx 5",
+        "addx -1",
+        "addx 5",
+        "addx -1",
+        "addx -35",
+        "addx 1",
+        "addx 24",
+        "addx -19",
+        "addx 1",
+        "addx 16",
+        "addx -11",
+        "noop",
+        "noop",
+        "addx 21",
+        "addx -15",
+        "noop",
+        "noop",
+        "addx -3",
+        "addx 9",
+        "addx 1",
+        "addx -3",
+        "addx 8",
+        "addx 1",
+        "addx 5",
+        "noop",
+        "noop",
+        "noop",
+        "noop",
+        "noop",
+        "addx -36",
+        "noop",
+        "addx 1",
+        "addx 7",
+        "noop",
+        "noop",
+        "noop",
+        "addx 2",
+        "addx 6",
+        "noop",
+        "noop",
+        "noop",
+        "noop",
+        "noop",
+        "addx 1",
+        "noop",
+        "noop",
+        "addx 7",
+        "addx 1",
+        "noop",
+        "addx -13",
+        "addx 13",
+        "addx 7",
+        "noop",
+        "addx 1",
+        "addx -33",
+        "noop",
+        "noop",
+        "noop",
+        "addx 2",
+        "noop",
+        "noop",
+        "noop",
+        "addx 8",
+        "noop",
+        "addx -1",
+        "addx 2",
+        "addx 1",
+        "noop",
+        "addx 17",
+        "addx -9",
+        "addx 1",
+        "addx 1",
+        "addx -3",
+        "addx 11",
+        "noop",
+        "noop",
+        "addx 1",
+        "noop",
+        "addx 1",
+        "noop",
+        "noop",
+        "addx -13",
+        "addx -19",
+        "addx 1",
+        "addx 3",
+        "addx 26",
+        "addx -30",
+        "addx 12",
+        "addx -1",
+        "addx 3",
+        "addx 1",
+        "noop",
+        "noop",
+        "noop",
+        "addx -9",
+        "addx 18",
+        "addx 1",
+        "addx 2",
+        "noop",
+        "noop",
+        "addx 9",
+        "noop",
+        "noop",
+        "noop",
+        "addx -1",
+        "addx 2",
+        "addx -37",
+        "addx 1",
+        "addx 3",
+        "noop",
+        "addx 15",
+        "addx -21",
+        "addx 22",
+        "addx -6",
+        "addx 1",
+        "noop",
+        "addx 2",
+        "addx 1",
+        "noop",
+        "addx -10",
+        "noop",
+        "noop",
+        "addx 20",
+        "addx 1",
+        "addx 2",
+        "addx 2",
+        "addx -6",
+        "addx -11",
+        "noop",
+        "noop",
+        "noop",
+    };
+
+    const std::string expected_result = "##..##..##..##..##..##..##..##..##..##..\n"
+                                        "###...###...###...###...###...###...###.\n"
+                                        "####....####....####....####....####....\n"
+                                        "#####.....#####.....#####.....#####.....\n"
+                                        "######......######......######......####\n"
+                                        "#######.......#######.......#######.....\n";
+
+    for (auto _ : state) {
+        const auto result = day10_part2(lines);
+        benchmark::DoNotOptimize(result);
+        assert(result == expected_result);
+    }
+}
+
 static void BM_puzzle_input_day01_part1(benchmark::State& state)
 {
     auto input_stream = open_input_file(find_input_file("day01"));
@@ -616,6 +940,37 @@ static void BM_puzzle_input_day09_part2(benchmark::State& state)
     }
 }
 
+static void BM_puzzle_input_day10_part1(benchmark::State& state)
+{
+    auto input_stream = open_input_file(find_input_file("day10"));
+    const std::vector<std::string> input = read_lines_and_remove_empty_lines(*input_stream);
+
+    for (auto _ : state) {
+        const auto result = day10_part1(input);
+        benchmark::DoNotOptimize(result);
+        assert(result == 13760);
+    }
+}
+
+static void BM_puzzle_input_day10_part2(benchmark::State& state)
+{
+    const std::string expected_result = "###..####.#..#.####..##..###..####.####.\n"
+                                        "#..#.#....#.#.....#.#..#.#..#.#....#....\n"
+                                        "#..#.###..##.....#..#....#..#.###..###..\n"
+                                        "###..#....#.#...#...#....###..#....#....\n"
+                                        "#.#..#....#.#..#....#..#.#....#....#....\n"
+                                        "#..#.#....#..#.####..##..#....####.#....\n";
+
+    auto input_stream = open_input_file(find_input_file("day10"));
+    const std::vector<std::string> input = read_lines_and_remove_empty_lines(*input_stream);
+
+    for (auto _ : state) {
+        const auto result = day10_part2(input);
+        benchmark::DoNotOptimize(result);
+        assert(result == expected_result);
+    }
+}
+
 BENCHMARK(BM_example_input_day01_part1);
 BENCHMARK(BM_example_input_day01_part2);
 BENCHMARK(BM_example_input_day02_part1);
@@ -634,6 +989,8 @@ BENCHMARK(BM_example_input_day08_part1);
 BENCHMARK(BM_example_input_day08_part2);
 BENCHMARK(BM_example_input_day09_part1);
 BENCHMARK(BM_example_input_day09_part2);
+BENCHMARK(BM_example_input_day10_part1);
+BENCHMARK(BM_example_input_day10_part2);
 
 BENCHMARK(BM_puzzle_input_day01_part1);
 BENCHMARK(BM_puzzle_input_day01_part2);
@@ -653,3 +1010,5 @@ BENCHMARK(BM_puzzle_input_day08_part1);
 BENCHMARK(BM_puzzle_input_day08_part2);
 BENCHMARK(BM_puzzle_input_day09_part1);
 BENCHMARK(BM_puzzle_input_day09_part2);
+BENCHMARK(BM_puzzle_input_day10_part1);
+BENCHMARK(BM_puzzle_input_day10_part2);
