@@ -14,6 +14,7 @@
 #include "../day06/day06.hpp"
 #include "../day07/day07.hpp"
 #include "../day08/day08.hpp"
+#include "../day09/day09.hpp"
 
 static void BM_example_input_day01_part1(benchmark::State& state)
 {
@@ -343,6 +344,62 @@ static void BM_example_input_day08_part2(benchmark::State& state)
     }
 }
 
+static void BM_example_input_day09_part1(benchmark::State& state)
+{
+    const std::vector<std::string> lines = {
+        "R 4",
+        "U 4",
+        "L 3",
+        "D 1",
+        "R 4",
+        "D 1",
+        "L 5",
+        "R 2",
+    };
+
+    for (auto _ : state) {
+        const auto result = day09_part1(lines);
+        benchmark::DoNotOptimize(result);
+        assert(result == 13);
+    }
+}
+
+static void BM_example_input_day09_part2(benchmark::State& state)
+{
+    const std::vector<std::string> lines1 = {
+        "R 4",
+        "U 4",
+        "L 3",
+        "D 1",
+        "R 4",
+        "D 1",
+        "L 5",
+        "R 2",
+    };
+
+    const std::vector<std::string> lines2 = {
+        "R 5",
+        "U 8",
+        "L 8",
+        "D 3",
+        "R 17",
+        "D 10",
+        "L 25",
+        "U 20",
+    };
+
+    for (auto _ : state) {
+        const auto result1 = day09_part2(lines1);
+        const auto result2 = day09_part2(lines2);
+
+        benchmark::DoNotOptimize(result1);
+        benchmark::DoNotOptimize(result2);
+
+        assert(result1 == 1);
+        assert(result2 == 36);
+    }
+}
+
 static void BM_puzzle_input_day01_part1(benchmark::State& state)
 {
     auto input_stream = open_input_file(find_input_file("day01"));
@@ -535,6 +592,30 @@ static void BM_puzzle_input_day08_part2(benchmark::State& state)
     }
 }
 
+static void BM_puzzle_input_day09_part1(benchmark::State& state)
+{
+    auto input_stream = open_input_file(find_input_file("day09"));
+    const std::vector<std::string> input = read_lines_and_remove_empty_lines(*input_stream);
+
+    for (auto _ : state) {
+        const auto result = day09_part1(input);
+        benchmark::DoNotOptimize(result);
+        assert(result == 6209);
+    }
+}
+
+static void BM_puzzle_input_day09_part2(benchmark::State& state)
+{
+    auto input_stream = open_input_file(find_input_file("day09"));
+    const std::vector<std::string> input = read_lines_and_remove_empty_lines(*input_stream);
+
+    for (auto _ : state) {
+        const auto result = day09_part2(input);
+        benchmark::DoNotOptimize(result);
+        assert(result == 2460);
+    }
+}
+
 BENCHMARK(BM_example_input_day01_part1);
 BENCHMARK(BM_example_input_day01_part2);
 BENCHMARK(BM_example_input_day02_part1);
@@ -551,6 +632,8 @@ BENCHMARK(BM_example_input_day07_part1);
 BENCHMARK(BM_example_input_day07_part2);
 BENCHMARK(BM_example_input_day08_part1);
 BENCHMARK(BM_example_input_day08_part2);
+BENCHMARK(BM_example_input_day09_part1);
+BENCHMARK(BM_example_input_day09_part2);
 
 BENCHMARK(BM_puzzle_input_day01_part1);
 BENCHMARK(BM_puzzle_input_day01_part2);
@@ -568,3 +651,5 @@ BENCHMARK(BM_puzzle_input_day07_part1);
 BENCHMARK(BM_puzzle_input_day07_part2);
 BENCHMARK(BM_puzzle_input_day08_part1);
 BENCHMARK(BM_puzzle_input_day08_part2);
+BENCHMARK(BM_puzzle_input_day09_part1);
+BENCHMARK(BM_puzzle_input_day09_part2);

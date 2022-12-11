@@ -8,6 +8,7 @@ add_executable(benchmark
         ../day06/day06.cpp ../day06/day06.hpp
         ../day07/day07.cpp ../day07/day07.hpp
         ../day08/day08.cpp ../day08/day08.hpp
+        ../day09/day09.cpp ../day09/day09.hpp
 )
 
 set_target_properties(benchmark PROPERTIES CXX_EXTENSIONS OFF)
