@@ -14,7 +14,7 @@ inline bool operator==(const Coords& lhs, const Coords& rhs) { return lhs.x == r
 inline bool operator!=(const Coords& lhs, const Coords& rhs) { return !(lhs == rhs); }
 
 struct Rope {
-    explicit Rope(const int num_knots) : knots(num_knots) { }
+    explicit Rope(const int num_knots) : knots(static_cast<std::size_t>(num_knots)) { }
     std::vector<Coords> knots;
 };
 
@@ -56,7 +56,7 @@ void perform_motions(Motion motion, Rope& rope, std::vector<Coords>& tail_positi
         rope.knots[0].y += motion.delta.y;
 
         for (int i = 1; i < std::ssize(rope.knots); ++i)
-            perform_follow_motion(rope.knots[i - 1], rope.knots[i]);
+            perform_follow_motion(rope.knots[static_cast<std::size_t>(i - 1)], rope.knots[static_cast<std::size_t>(i)]);
 
         tail_positions.push_back(rope.knots.back());
     }
