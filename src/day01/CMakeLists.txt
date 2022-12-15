@@ -4,7 +4,7 @@ set_target_properties(day01 PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(day01 PUBLIC cxx_std_20)
 target_compile_options(day01 PRIVATE ${SANITIZER_COMPILE_OPTIONS} ${DEFAULT_COMPILER_OPTIONS} ${DEFAULT_COMPILER_WARNINGS})
 target_link_options(day01 PRIVATE ${SANITIZER_LINK_OPTIONS})
-target_link_libraries(day01 PRIVATE ${SANITIZER_LINK_LIBRARIES} LIB_shared)
+target_link_libraries(day01 PRIVATE ${SANITIZER_LINK_LIBRARIES} libaoc)
 
 # Tests
 if (BUILD_TESTING)
@@ -14,7 +14,7 @@ if (BUILD_TESTING)
     target_compile_features(day01_tests PUBLIC cxx_std_20)
     target_compile_options(day01_tests PRIVATE ${SANITIZER_COMPILE_OPTIONS} ${DEFAULT_COMPILER_OPTIONS} ${DEFAULT_COMPILER_WARNINGS})
     target_link_options(day01_tests PRIVATE ${SANITIZER_LINK_OPTIONS})
-    target_link_libraries(day01_tests PRIVATE ${SANITIZER_LINK_LIBRARIES} LIB_shared Catch2::Catch2WithMain)
+    target_link_libraries(day01_tests PRIVATE ${SANITIZER_LINK_LIBRARIES} libaoc Catch2::Catch2WithMain)
 
     add_test(NAME day01_tests COMMAND day01_tests)
 endif ()

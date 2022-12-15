@@ -21,7 +21,7 @@ include(cmake/Sanitizers.cmake)
 
 find_package(benchmark CONFIG REQUIRED)
 
-add_subdirectory(src/shared)
+add_subdirectory(src/libaoc)
 add_subdirectory(src/day01)
 add_subdirectory(src/day02)
 add_subdirectory(src/day03)
