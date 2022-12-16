@@ -1,5 +1,8 @@
+#include <sstream>
+
 #include "catch2/catch_test_macros.hpp"
 
+#include "read_grid.hpp"
 #include "read_input.hpp"
 #include "test_helpers.hpp"
 
@@ -7,22 +10,23 @@
 
 TEST_CASE("works with example input")
 {
-    const std::vector<std::string> lines = {
-        "30373",
-        "25512",
-        "65332",
-        "33549",
-        "35390",
-    };
+    std::istringstream input{
+        "30373\n"
+        "25512\n"
+        "65332\n"
+        "33549\n"
+        "35390\n"};
+
+    const Grid grid = read_digit_grid(input);
 
     SECTION("part 1")
     {
-        CHECK(day08_part1(lines) == 21);
+        CHECK(day08_part1(grid) == 21);
     }
 
     SECTION("part 2")
     {
-        CHECK(day08_part2(lines) == 8);
+        CHECK(day08_part2(grid) == 8);
     }
 }
 
@@ -30,15 +34,15 @@ TEST_CASE("works with puzzle input")
 {
     auto input_stream = open_input_file(find_input_file("day08"));
     REQUIRE(input_stream.has_value());
-    const std::vector<std::string> input = read_lines_and_remove_empty_lines(*input_stream);
+    const Grid grid = read_digit_grid(*input_stream);
 
     SECTION("part 1")
     {
-        CHECK(day08_part1(input) == 1533);
+        CHECK(day08_part1(grid) == 1533);
     }
 
     SECTION("part 2")
     {
-        CHECK(day08_part2(input) == 345744);
+        CHECK(day08_part2(grid) == 345744);
     }
 }

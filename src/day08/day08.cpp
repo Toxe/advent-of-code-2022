@@ -1,31 +1,23 @@
 #include "day08.hpp"
 
-#include <algorithm>
 #include <numeric>
-#include <vector>
 
 constexpr int direction_forward = 1;
 constexpr int direction_backward = -1;
 
-char tree_height(const std::vector<std::string>& lines, const int row, const int col)
+void mark_highest_trees_in_row(const ByteGrid& grid, Grid<char>& marked_trees, const int row, const int direction)
 {
-    return static_cast<char>(lines[static_cast<std::size_t>(row)][static_cast<std::size_t>(col)] - '0');
-}
-
-void mark_highest_trees_in_row(const std::vector<std::string>& lines, std::vector<std::vector<char>>& marked_trees, const int row, const int direction)
-{
-    const int num_cols = static_cast<int>(lines[0].size());
-    const int start = direction > 0 ? 0 : num_cols - 1;
-    const int end = direction > 0 ? num_cols : -1;
+    const int start = direction > 0 ? 0 : grid.cols() - 1;
+    const int end = direction > 0 ? grid.cols() : -1;
 
     char highest_tree = -1;
 
     for (int col = start; col != end; col += direction) {
-        const char tree = tree_height(lines, row, col);
+        const auto tree = static_cast<char>(grid.value(row, col));
 
         if (tree > highest_tree) {
             highest_tree = tree;
-            marked_trees[static_cast<std::size_t>(row)][static_cast<std::size_t>(col)] = tree;
+            marked_trees.value(row, col) = tree;
         }
 
         if (tree == 9)
@@ -33,20 +25,19 @@ void mark_highest_trees_in_row(const std::vector<std::string>& lines, std::vecto
     }
 }
 
-void mark_highest_trees_in_column(const std::vector<std::string>& lines, std::vector<std::vector<char>>& marked_trees, const int col, const int direction)
+void mark_highest_trees_in_column(const ByteGrid& grid, Grid<char>& marked_trees, const int col, const int direction)
 {
-    const int num_rows = static_cast<int>(lines.size());
-    const int start = direction > 0 ? 0 : num_rows - 1;
-    const int end = direction > 0 ? num_rows : -1;
+    const int start = direction > 0 ? 0 : grid.rows() - 1;
+    const int end = direction > 0 ? grid.rows() : -1;
 
     char highest_tree = -1;
 
     for (int row = start; row != end; row += direction) {
-        const char tree = tree_height(lines, row, col);
+        const auto tree = static_cast<char>(grid.value(row, col));
 
         if (tree > highest_tree) {
             highest_tree = tree;
-            marked_trees[static_cast<std::size_t>(row)][static_cast<std::size_t>(col)] = tree;
+            marked_trees.value(row, col) = tree;
         }
 
         if (tree == 9)
@@ -54,75 +45,73 @@ void mark_highest_trees_in_column(const std::vector<std::string>& lines, std::ve
     }
 }
 
-int calc_scenic_score_horizontally(const std::vector<std::string>& lines, const int row, const int col, const int direction)
+int calc_scenic_score_horizontally(const ByteGrid& grid, const int row, const int col, const int direction)
 {
-    const int num_cols = static_cast<int>(lines[0].size());
     const int start = col + direction;
-    const int end = direction > 0 ? num_cols : -1;
-    const char current_tree_height = tree_height(lines, row, col);
+    const int end = direction > 0 ? grid.cols() : -1;
+    const auto current_tree_height = grid.value(row, col);
 
     for (int pos = start; pos != end; pos += direction)
-        if (tree_height(lines, row, pos) >= current_tree_height)
+        if (grid.value(row, pos) >= current_tree_height)
             return direction > 0 ? pos - col : col - pos;
 
-    return direction > 0 ? num_cols - col - 1 : col;
+    return direction > 0 ? grid.cols() - col - 1 : col;
 }
 
-int calc_scenic_score_vertically(const std::vector<std::string>& lines, const int row, const int col, const int direction)
+int calc_scenic_score_vertically(const ByteGrid& grid, const int row, const int col, const int direction)
 {
-    const int num_rows = static_cast<int>(lines.size());
     const int start = row + direction;
-    const int end = direction > 0 ? num_rows : -1;
-    const char current_tree_height = tree_height(lines, row, col);
+    const int end = direction > 0 ? grid.rows() : -1;
+    const auto current_tree_height = grid.value(row, col);
 
     for (int pos = start; pos != end; pos += direction)
-        if (tree_height(lines, pos, col) >= current_tree_height)
+        if (grid.value(pos, col) >= current_tree_height)
             return direction > 0 ? pos - row : row - pos;
 
-    return direction > 0 ? num_rows - row - 1 : row;
+    return direction > 0 ? grid.rows() - row - 1 : row;
 }
 
-int scenic_score(const std::vector<std::string>& lines, const int row, const int col)
+int scenic_score(const ByteGrid& grid, const int row, const int col)
 {
-    const auto r = calc_scenic_score_horizontally(lines, row, col, direction_forward);
-    const auto l = calc_scenic_score_horizontally(lines, row, col, direction_backward);
-    const auto u = calc_scenic_score_vertically(lines, row, col, direction_forward);
-    const auto d = calc_scenic_score_vertically(lines, row, col, direction_backward);
+    const auto r = calc_scenic_score_horizontally(grid, row, col, direction_forward);
+    const auto l = calc_scenic_score_horizontally(grid, row, col, direction_backward);
+    const auto u = calc_scenic_score_vertically(grid, row, col, direction_forward);
+    const auto d = calc_scenic_score_vertically(grid, row, col, direction_backward);
 
     return r * l * u * d;
 }
 
-int day08_part1(const std::vector<std::string>& lines)
+int day08_part1(const ByteGrid& grid)
 {
-    std::vector<std::vector<char>> marked_trees;
+    Grid<char> marked_trees{grid.rows(), grid.cols(), -1};
 
-    for (int row = 0; row < std::ssize(lines); ++row)
-        marked_trees.emplace_back(lines[0].size(), static_cast<char>(-1));
-
-    for (int row = 0; row < std::ssize(lines); ++row) {
-        mark_highest_trees_in_row(lines, marked_trees, row, direction_forward);
-        mark_highest_trees_in_row(lines, marked_trees, row, direction_backward);
+    for (int row = 0; row < grid.rows(); ++row) {
+        mark_highest_trees_in_row(grid, marked_trees, row, direction_forward);
+        mark_highest_trees_in_row(grid, marked_trees, row, direction_backward);
     }
 
-    for (int col = 0; col < std::ssize(lines[0]); ++col) {
-        mark_highest_trees_in_column(lines, marked_trees, col, direction_forward);
-        mark_highest_trees_in_column(lines, marked_trees, col, direction_backward);
+    for (int col = 0; col < grid.cols(); ++col) {
+        mark_highest_trees_in_column(grid, marked_trees, col, direction_forward);
+        mark_highest_trees_in_column(grid, marked_trees, col, direction_backward);
     }
 
-    return std::accumulate(marked_trees.begin(), marked_trees.end(), 0, [](auto current_sum, auto row) {
-        return current_sum + static_cast<int>(std::count_if(row.begin(), row.end(), [](auto c) {
-            return c >= 0;
-        }));
-    });
+    int num = 0;
+
+    for (int row = 0; row < marked_trees.rows(); ++row)
+        for (int col = 0; col < marked_trees.cols(); ++col)
+            if (marked_trees.value(row, col) >= 0)
+                ++num;
+
+    return num;
 }
 
-int day08_part2(const std::vector<std::string>& lines)
+int day08_part2(const ByteGrid& grid)
 {
     int max_score = 0;
 
-    for (int row = 1; row < std::ssize(lines) - 1; ++row)
-        for (int col = 1; col < std::ssize(lines[0]) - 1; ++col)
-            max_score = std::max(max_score, scenic_score(lines, row, col));
+    for (int row = 1; row < grid.rows() - 1; ++row)
+        for (int col = 1; col < grid.cols() - 1; ++col)
+            max_score = std::max(max_score, scenic_score(grid, row, col));
 
     return max_score;
 }

@@ -2,6 +2,7 @@
 
 #include "benchmark/benchmark.h"
 
+#include "read_grid.hpp"
 #include "read_grouped_numbers.hpp"
 #include "read_input.hpp"
 #include "test_helpers.hpp"
@@ -313,16 +314,17 @@ static void BM_example_input_day07_part2(benchmark::State& state)
 
 static void BM_example_input_day08_part1(benchmark::State& state)
 {
-    const std::vector<std::string> lines = {
-        "30373",
-        "25512",
-        "65332",
-        "33549",
-        "35390",
-    };
+    std::istringstream input{
+        "30373\n"
+        "25512\n"
+        "65332\n"
+        "33549\n"
+        "35390\n"};
+
+    const auto grid = read_digit_grid(input);
 
     for (auto _ : state) {
-        const auto result = day08_part1(lines);
+        const auto result = day08_part1(grid);
         benchmark::DoNotOptimize(result);
         assert(result == 21);
     }
@@ -330,16 +332,17 @@ static void BM_example_input_day08_part1(benchmark::State& state)
 
 static void BM_example_input_day08_part2(benchmark::State& state)
 {
-    const std::vector<std::string> lines = {
-        "30373",
-        "25512",
-        "65332",
-        "33549",
-        "35390",
-    };
+    std::istringstream input{
+        "30373\n"
+        "25512\n"
+        "65332\n"
+        "33549\n"
+        "35390\n"};
+
+    const auto grid = read_digit_grid(input);
 
     for (auto _ : state) {
-        const auto result = day08_part2(lines);
+        const auto result = day08_part2(grid);
         benchmark::DoNotOptimize(result);
         assert(result == 8);
     }
@@ -895,10 +898,10 @@ static void BM_puzzle_input_day07_part2(benchmark::State& state)
 static void BM_puzzle_input_day08_part1(benchmark::State& state)
 {
     auto input_stream = open_input_file(find_input_file("day08"));
-    const std::vector<std::string> input = read_lines_and_remove_empty_lines(*input_stream);
+    const auto grid = read_digit_grid(*input_stream);
 
     for (auto _ : state) {
-        const auto result = day08_part1(input);
+        const auto result = day08_part1(grid);
         benchmark::DoNotOptimize(result);
         assert(result == 1533);
     }
@@ -907,10 +910,10 @@ static void BM_puzzle_input_day08_part1(benchmark::State& state)
 static void BM_puzzle_input_day08_part2(benchmark::State& state)
 {
     auto input_stream = open_input_file(find_input_file("day08"));
-    const std::vector<std::string> input = read_lines_and_remove_empty_lines(*input_stream);
+    const auto grid = read_digit_grid(*input_stream);
 
     for (auto _ : state) {
-        const auto result = day08_part2(input);
+        const auto result = day08_part2(grid);
         benchmark::DoNotOptimize(result);
         assert(result == 345744);
     }

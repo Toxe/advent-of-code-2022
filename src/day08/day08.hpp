@@ -3,5 +3,7 @@
 #include <string>
 #include <vector>
 
-int day08_part1(const std::vector<std::string>& lines);
-int day08_part2(const std::vector<std::string>& lines);
+#include "grid.hpp"
+
+int day08_part1(const ByteGrid& grid);
+int day08_part2(const ByteGrid& grid);
