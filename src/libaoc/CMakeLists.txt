@@ -2,6 +2,8 @@ add_library(libaoc
         grid.hpp
         read_grouped_numbers.cpp
         read_grouped_numbers.hpp
+        read_grid.cpp
+        read_grid.hpp
         read_input.cpp
         read_input.hpp
         test_helpers.cpp
@@ -24,6 +26,7 @@ if (BUILD_TESTING)
     add_executable(libaoc_tests
             grid.test.cpp
             read_grouped_numbers.test.cpp
+            read_grid.test.cpp
             read_input.test.cpp
             test_helpers.test.cpp
     )
