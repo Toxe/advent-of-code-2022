@@ -1,4 +1,6 @@
 add_library(libaoc
+        coords.cpp
+        coords.hpp
         grid.hpp
         read_grouped_numbers.cpp
         read_grouped_numbers.hpp
@@ -24,6 +26,7 @@ endif ()
 # Tests
 if (BUILD_TESTING)
     add_executable(libaoc_tests
+            coords.test.cpp
             grid.test.cpp
             read_grouped_numbers.test.cpp
             read_grid.test.cpp
