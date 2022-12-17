@@ -4,14 +4,7 @@
 #include <cmath>
 #include <stdexcept>
 
-struct Coords {
-    int x = 0;
-    int y = 0;
-};
-
-inline bool operator<(const Coords& lhs, const Coords& rhs) { return (lhs.x < rhs.x) || (lhs.x == rhs.x && lhs.y < rhs.y); }
-inline bool operator==(const Coords& lhs, const Coords& rhs) { return lhs.x == rhs.x && lhs.y == rhs.y; }
-inline bool operator!=(const Coords& lhs, const Coords& rhs) { return !(lhs == rhs); }
+#include "coords.hpp"
 
 struct Rope {
     explicit Rope(const int num_knots) : knots(static_cast<std::size_t>(num_knots)) { }
@@ -45,15 +38,15 @@ void perform_follow_motion(const Coords& head, Coords& knot)
     if (dist.x != 2 && dist.y != 2)
         return;
 
-    knot.x += (dist.x == 2) ? delta.x / 2 : delta.x;
-    knot.y += (dist.y == 2) ? delta.y / 2 : delta.y;
+    knot.move(
+        (dist.x == 2) ? delta.x / 2 : delta.x,
+        (dist.y == 2) ? delta.y / 2 : delta.y);
 }
 
 void perform_motions(Motion motion, Rope& rope, std::vector<Coords>& tail_positions)
 {
     while (motion.steps-- > 0) {
-        rope.knots[0].x += motion.delta.x;
-        rope.knots[0].y += motion.delta.y;
+        rope.knots[0] += motion.delta;
 
         for (int i = 1; i < std::ssize(rope.knots); ++i)
             perform_follow_motion(rope.knots[static_cast<std::size_t>(i - 1)], rope.knots[static_cast<std::size_t>(i)]);
