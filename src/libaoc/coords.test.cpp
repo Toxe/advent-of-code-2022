@@ -66,7 +66,24 @@ TEST_CASE("Coords")
         CHECK(b == Coords{-3, -6});
     }
 
-    SECTION("move() in relative directions")
+    SECTION("move horizontally and vertically")
+    {
+        Coords a{1, 2};
+
+        a.move_horizontally(3);
+        CHECK(a == Coords{4, 2});
+
+        a.move_horizontally(-1);
+        CHECK(a == Coords{3, 2});
+
+        a.move_vertically(-1);
+        CHECK(a == Coords{3, 1});
+
+        a.move_vertically(3);
+        CHECK(a == Coords{3, 4});
+    }
+
+    SECTION("move in relative directions")
     {
         Coords a;
         Coords b;
@@ -92,7 +109,7 @@ TEST_CASE("Coords")
         CHECK(b == Coords{3, -2});
     }
 
-    SECTION("move() in cardinal directions")
+    SECTION("move in cardinal directions")
     {
         Coords a;
         Coords b;

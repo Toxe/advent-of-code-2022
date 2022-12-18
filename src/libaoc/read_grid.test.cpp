@@ -7,17 +7,17 @@
 void check_grid_values(const ByteGrid& grid)
 {
     CHECK(grid.value(0, 0) == 1);
-    CHECK(grid.value(0, 1) == 2);
-    CHECK(grid.value(0, 2) == 3);
-    CHECK(grid.value(0, 3) == 4);
-    CHECK(grid.value(1, 0) == 5);
-    CHECK(grid.value(1, 1) == 6);
-    CHECK(grid.value(1, 2) == 7);
-    CHECK(grid.value(1, 3) == 8);
+    CHECK(grid.value(1, 0) == 2);
     CHECK(grid.value(2, 0) == 3);
-    CHECK(grid.value(2, 1) == 4);
+    CHECK(grid.value(3, 0) == 4);
+    CHECK(grid.value(0, 1) == 5);
+    CHECK(grid.value(1, 1) == 6);
+    CHECK(grid.value(2, 1) == 7);
+    CHECK(grid.value(3, 1) == 8);
+    CHECK(grid.value(0, 2) == 3);
+    CHECK(grid.value(1, 2) == 4);
     CHECK(grid.value(2, 2) == 5);
-    CHECK(grid.value(2, 3) == 6);
+    CHECK(grid.value(3, 2) == 6);
 }
 
 TEST_CASE("read_digit_grid()")
@@ -31,8 +31,8 @@ TEST_CASE("read_digit_grid()")
 
         const auto grid = read_digit_grid(input);
 
-        CHECK(grid.rows() == 3);
         CHECK(grid.cols() == 4);
+        CHECK(grid.rows() == 3);
 
         check_grid_values(grid);
     }
@@ -46,8 +46,8 @@ TEST_CASE("read_digit_grid()")
 
         const auto grid = read_digit_grid(input);
 
-        CHECK(grid.rows() == 3);
         CHECK(grid.cols() == 4);
+        CHECK(grid.rows() == 3);
 
         check_grid_values(grid);
     }
@@ -61,8 +61,8 @@ TEST_CASE("read_digit_grid()")
 
         const auto grid = read_digit_grid(input);
 
-        CHECK(grid.rows() == 3);
         CHECK(grid.cols() == 4);
+        CHECK(grid.rows() == 3);
 
         check_grid_values(grid);
     }
@@ -79,8 +79,8 @@ TEST_CASE("read_digit_grid()")
 
         const auto grid = read_digit_grid(input);
 
-        CHECK(grid.rows() == 3);
         CHECK(grid.cols() == 4);
+        CHECK(grid.rows() == 3);
 
         check_grid_values(grid);
     }

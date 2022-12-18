@@ -4,6 +4,9 @@ struct Coords {
     void move(int dx, int dy);
     void move(const Coords& delta);
 
+    void move_horizontally(int distance);
+    void move_vertically(int distance);
+
     void move_up(int distance);
     void move_down(int distance);
     void move_left(int distance);
