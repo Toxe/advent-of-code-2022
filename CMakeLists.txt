@@ -19,8 +19,6 @@ include(cmake/StaticAnalyzers.cmake)
 # sanitizers
 include(cmake/Sanitizers.cmake)
 
-find_package(benchmark CONFIG REQUIRED)
-
 add_subdirectory(src/libaoc)
 add_subdirectory(src/day01)
 add_subdirectory(src/day02)
