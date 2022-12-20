@@ -12,7 +12,7 @@ int main(int argc, const char* argv[])
     if (!input_stream)
         return 1;
 
-    const auto grid = read_digit_grid(*input_stream);
+    auto grid = read_digit_grid(*input_stream);
 
     std::cout << "day 08, part 1: " << day08_part1(grid) << '\n';
     std::cout << "day 08, part 2: " << day08_part2(grid) << '\n';

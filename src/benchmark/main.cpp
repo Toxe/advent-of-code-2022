@@ -1,4 +1,5 @@
 #include <cassert>
+#include <fstream>
 
 #define ANKERL_NANOBENCH_IMPLEMENT
 #include "nanobench.h"
@@ -224,6 +225,9 @@ void example_input_day07()
 
 void example_input_day08()
 {
+    std::ofstream out1("example_input_day08_part1.json");
+    std::ofstream out2("example_input_day08_part2.json");
+
     std::istringstream input{
         "30373\n"
         "25512\n"
@@ -231,19 +235,19 @@ void example_input_day08()
         "33549\n"
         "35390\n"};
 
-    const auto grid = read_digit_grid(input);
+    auto grid = read_digit_grid(input);
 
-    ankerl::nanobench::Bench().run("example input: day 08, part 1", [&] {
+    ankerl::nanobench::Bench().epochs(1000).run("example input: day 08, part 1", [&] {
         const auto result = day08_part1(grid);
         ankerl::nanobench::doNotOptimizeAway(result);
         assert(result == 21);
-    });
+    }).render(ankerl::nanobench::templates::pyperf(), out1);
 
-    ankerl::nanobench::Bench().run("example input: day 08, part 2", [&] {
+    ankerl::nanobench::Bench().epochs(1000).run("example input: day 08, part 2", [&] {
         const auto result = day08_part2(grid);
         ankerl::nanobench::doNotOptimizeAway(result);
         assert(result == 8);
-    });
+    }).render(ankerl::nanobench::templates::pyperf(), out2);
 }
 
 void example_input_day09()
@@ -587,20 +591,23 @@ void puzzle_input_day07()
 
 void puzzle_input_day08()
 {
-    auto input_stream = open_input_file(find_input_file("day08"));
-    const auto grid = read_digit_grid(*input_stream);
+    std::ofstream out1("puzzle_input_day08_part1.json");
+    std::ofstream out2("puzzle_input_day08_part2.json");
 
-    ankerl::nanobench::Bench().run("puzzle input: day 08, part 1", [&] {
+    auto input_stream = open_input_file(find_input_file("day08"));
+    auto grid = read_digit_grid(*input_stream);
+
+    ankerl::nanobench::Bench().epochs(1000).run("puzzle input: day 08, part 1", [&] {
         const auto result = day08_part1(grid);
         ankerl::nanobench::doNotOptimizeAway(result);
         assert(result == 1533);
-    });
+    }).render(ankerl::nanobench::templates::pyperf(), out1);
 
-    ankerl::nanobench::Bench().run("puzzle input: day 08, part 2", [&] {
+    ankerl::nanobench::Bench().epochs(1000).run("puzzle input: day 08, part 2", [&] {
         const auto result = day08_part2(grid);
         ankerl::nanobench::doNotOptimizeAway(result);
         assert(result == 345744);
-    });
+    }).render(ankerl::nanobench::templates::pyperf(), out2);
 }
 
 void puzzle_input_day09()

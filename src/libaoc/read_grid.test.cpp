@@ -31,8 +31,8 @@ TEST_CASE("read_digit_grid()")
 
         const auto grid = read_digit_grid(input);
 
-        CHECK(grid.cols() == 4);
-        CHECK(grid.rows() == 3);
+        CHECK(grid.width() == 4);
+        CHECK(grid.height() == 3);
 
         check_grid_values(grid);
     }
@@ -46,8 +46,8 @@ TEST_CASE("read_digit_grid()")
 
         const auto grid = read_digit_grid(input);
 
-        CHECK(grid.cols() == 4);
-        CHECK(grid.rows() == 3);
+        CHECK(grid.width() == 4);
+        CHECK(grid.height() == 3);
 
         check_grid_values(grid);
     }
@@ -61,13 +61,13 @@ TEST_CASE("read_digit_grid()")
 
         const auto grid = read_digit_grid(input);
 
-        CHECK(grid.cols() == 4);
-        CHECK(grid.rows() == 3);
+        CHECK(grid.width() == 4);
+        CHECK(grid.height() == 3);
 
         check_grid_values(grid);
     }
 
-    SECTION("stops reading rows after a newline")
+    SECTION("stops reading height after a newline")
     {
         std::istringstream input{
             "1234\n"
@@ -79,8 +79,8 @@ TEST_CASE("read_digit_grid()")
 
         const auto grid = read_digit_grid(input);
 
-        CHECK(grid.cols() == 4);
-        CHECK(grid.rows() == 3);
+        CHECK(grid.width() == 4);
+        CHECK(grid.height() == 3);
 
         check_grid_values(grid);
     }

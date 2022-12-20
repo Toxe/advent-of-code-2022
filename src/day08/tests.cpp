@@ -17,7 +17,7 @@ TEST_CASE("works with example input")
         "33549\n"
         "35390\n"};
 
-    const Grid grid = read_digit_grid(input);
+    Grid grid = read_digit_grid(input);
 
     SECTION("part 1")
     {
@@ -34,7 +34,7 @@ TEST_CASE("works with puzzle input")
 {
     auto input_stream = open_input_file(find_input_file("day08"));
     REQUIRE(input_stream.has_value());
-    const Grid grid = read_digit_grid(*input_stream);
+    Grid grid = read_digit_grid(*input_stream);
 
     SECTION("part 1")
     {
