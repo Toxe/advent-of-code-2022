@@ -29,38 +29,30 @@ void mark_highest_trees(ByteGrid::RowAndColIterator& row_or_col_iter, Grid<char>
     }
 }
 
-int calc_scenic_score_horizontally(const ByteGrid& grid, const int grid_col, const int grid_row, const int direction)
+int calc_scenic_score(ByteGrid::RowAndColIterator& row_or_col_iter, const int col_or_row_index, const int direction)
 {
-    const int start = grid_col + direction;
-    const int end = direction > 0 ? grid.width() : -1;
-    const auto current_tree_height = grid.value(grid_col, grid_row);
+    const auto begin_of_row_or_col = row_or_col_iter.begin();
+    const auto end_of_row_or_col = row_or_col_iter.end();
+    const auto current_tree_pos = begin_of_row_or_col + col_or_row_index;
+    const auto start_pos = current_tree_pos + direction;
+    const auto end = direction > 0 ? end_of_row_or_col : begin_of_row_or_col - 1;
 
-    for (int pos = start; pos != end; pos += direction)
-        if (grid.value(pos, grid_row) >= current_tree_height)
-            return direction > 0 ? pos - grid_col : grid_col - pos;
+    for (auto it = start_pos; it != end; it += direction)
+        if (*it >= *current_tree_pos)
+            return static_cast<int>((start_pos - it) + 1);
 
-    return direction > 0 ? grid.width() - grid_col - 1 : grid_col;
-}
-
-int calc_scenic_score_vertically(const ByteGrid& grid, const int grid_col, const int grid_row, const int direction)
-{
-    const int start = grid_row + direction;
-    const int end = direction > 0 ? grid.height() : -1;
-    const auto current_tree_height = grid.value(grid_col, grid_row);
-
-    for (int pos = start; pos != end; pos += direction)
-        if (grid.value(grid_col, pos) >= current_tree_height)
-            return direction > 0 ? pos - grid_row : grid_row - pos;
-
-    return direction > 0 ? grid.height() - grid_row - 1 : grid_row;
+    return direction > 0 ? static_cast<int>(end_of_row_or_col - start_pos) : col_or_row_index;
 }
 
 int scenic_score(ByteGrid& grid, const int col, const int row)
 {
-    const auto r = calc_scenic_score_horizontally(grid, col, row, direction_forward);
-    const auto l = calc_scenic_score_horizontally(grid, col, row, direction_backward);
-    const auto u = calc_scenic_score_vertically(grid, col, row, direction_forward);
-    const auto d = calc_scenic_score_vertically(grid, col, row, direction_backward);
+    auto search_row = grid.row(row);
+    auto search_col = grid.col(col);
+
+    const auto r = calc_scenic_score(search_row, col, direction_forward);
+    const auto l = calc_scenic_score(search_row, col, direction_backward);
+    const auto u = calc_scenic_score(search_col, row, direction_forward);
+    const auto d = calc_scenic_score(search_col, row, direction_backward);
 
     return r * l * u * d;
 }

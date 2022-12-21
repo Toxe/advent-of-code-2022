@@ -292,6 +292,22 @@ TEST_CASE("Grid")
                 CHECK(*(grid.row(2).end() - 3) == 10);
             }
 
+            SECTION("distance between elements")
+            {
+                auto p1 = grid.row(2).begin();
+                auto p2 = grid.row(2).end();
+
+                CHECK(p1 - p1 == 0);
+                CHECK(p1 - (p1 + 1) == 1);
+                CHECK(p1 - (p1 + 2) == 2);
+                CHECK(p1 - (p1 + 3) == 3);
+                CHECK((p1 + 1) - p1 == 1);
+                CHECK((p1 + 2) - p1 == 2);
+                CHECK((p1 + 3) - p1 == 3);
+                CHECK(p1 - p2 == 4);
+                CHECK(p2 - p1 == 4);
+            }
+
             SECTION("std::next")
             {
                 auto it = grid.row(1).begin();
@@ -495,6 +511,24 @@ TEST_CASE("Grid")
             SECTION("operator-")
             {
                 CHECK(*(grid.col(2).end() - 3) == 11);
+            }
+
+            SECTION("distance between elements")
+            {
+                auto p1 = grid.col(2).begin();
+                auto p2 = grid.col(2).end();
+
+                CHECK(p1 - p1 == 0);
+                CHECK(p1 - (p1 + 1) == 1);
+                CHECK(p1 - (p1 + 2) == 2);
+                CHECK(p1 - (p1 + 3) == 3);
+                CHECK(p1 - (p1 + 4) == 4);
+                CHECK((p1 + 1) - p1 == 1);
+                CHECK((p1 + 2) - p1 == 2);
+                CHECK((p1 + 3) - p1 == 3);
+                CHECK((p1 + 4) - p1 == 4);
+                CHECK(p1 - p2 == 5);
+                CHECK(p2 - p1 == 5);
             }
 
             SECTION("std::next")

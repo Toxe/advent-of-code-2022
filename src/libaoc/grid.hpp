@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cmath>
 #include <cstddef>
 #include <iterator>
 #include <vector>
@@ -68,6 +69,14 @@ public:
 
         friend bool operator==(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ == b.ptr_; };
         friend bool operator!=(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ != b.ptr_; };
+
+        // distance between elements of the same row/column
+        friend auto operator-(const ValueIterator& a, const ValueIterator& b)
+        {
+            assert(a.stride_ == b.stride_);
+
+            return std::abs((a.ptr_ - b.ptr_) / a.stride_);
+        };
 
     private:
         pointer ptr_;
