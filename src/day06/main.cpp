@@ -1,5 +1,4 @@
-#include <iostream>
-
+#include "print_results.hpp"
 #include "read_input.hpp"
 
 #include "day06.hpp"
@@ -13,6 +12,6 @@ int main(int argc, const char* argv[])
 
     const std::string line = read_single_line(*input_stream);
 
-    std::cout << "day 06, part 1: " << day06_part1(line) << '\n';
-    std::cout << "day 06, part 2: " << day06_part2(line) << '\n';
+    print_result(6, 1, day06_part1(line));
+    print_result(6, 2, day06_part2(line));
 }

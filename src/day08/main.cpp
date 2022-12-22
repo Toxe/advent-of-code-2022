@@ -1,7 +1,6 @@
-#include <iostream>
-
-#include "read_input.hpp"
+#include "print_results.hpp"
 #include "read_grid.hpp"
+#include "read_input.hpp"
 
 #include "day08.hpp"
 
@@ -14,6 +13,6 @@ int main(int argc, const char* argv[])
 
     auto grid = read_digit_grid(*input_stream);
 
-    std::cout << "day 08, part 1: " << day08_part1(grid) << '\n';
-    std::cout << "day 08, part 2: " << day08_part2(grid) << '\n';
+    print_result(8, 1, day08_part1(grid));
+    print_result(8, 2, day08_part2(grid));
 }

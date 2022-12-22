@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <functional>
-#include <iostream>
 #include <sstream>
 #include <stdexcept>
 

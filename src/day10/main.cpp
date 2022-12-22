@@ -1,5 +1,4 @@
-#include <iostream>
-
+#include "print_results.hpp"
 #include "read_input.hpp"
 
 #include "day10.hpp"
@@ -13,6 +12,6 @@ int main(int argc, const char* argv[])
 
     const std::vector<std::string> input = read_lines_and_remove_empty_lines(*input_stream);
 
-    std::cout << "day 10, part 1: " << day10_part1(input) << '\n';
-    std::cout << "day 10, part 2: " << day10_part2(input) << '\n';
+    print_result(10, 1, day10_part1(input));
+    print_result(10, 2, day10_part2(input));
 }

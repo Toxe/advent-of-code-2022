@@ -1,5 +1,4 @@
-#include <iostream>
-
+#include "print_results.hpp"
 #include "read_grouped_numbers.hpp"
 #include "read_input.hpp"
 
@@ -14,6 +13,6 @@ int main(int argc, const char* argv[])
 
     const GroupedNumbers grouped_numbers = read_grouped_numbers(*input_stream);
 
-    std::cout << "day 01, part 1: " << day01_part1(grouped_numbers) << '\n';
-    std::cout << "day 01, part 2: " << day01_part2(grouped_numbers) << '\n';
+    print_result(1, 1, day01_part1(grouped_numbers));
+    print_result(1, 2, day01_part2(grouped_numbers));
 }
