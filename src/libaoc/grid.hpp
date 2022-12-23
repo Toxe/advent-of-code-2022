@@ -16,7 +16,7 @@ class Grid {
 public:
     class ValueIterator {
     public:
-        using iterator_category = std::bidirectional_iterator_tag;
+        using iterator_category = std::random_access_iterator_tag;
         using value_type = T;
         using difference_type = std::ptrdiff_t;
         using pointer = value_type*;
@@ -63,12 +63,17 @@ public:
         }
 
         reference operator*() const { return *ptr_; }
+        reference operator[](const difference_type n) { return *(ptr_ + n * stride_); }
 
-        ValueIterator operator+(const difference_type n) const { return ValueIterator{ptr_ + n * stride_, stride_}; }
-        ValueIterator operator-(const difference_type n) const { return ValueIterator{ptr_ - n * stride_, stride_}; }
+        friend ValueIterator operator+(const difference_type n, const ValueIterator& a) { return ValueIterator{a.ptr_ + n * a.stride_, a.stride_}; }
+        friend ValueIterator operator+(const ValueIterator& a, const difference_type n) { return ValueIterator{a.ptr_ + n * a.stride_, a.stride_}; }
+        friend ValueIterator operator-(const ValueIterator& a, const difference_type n) { return ValueIterator{a.ptr_ - n * a.stride_, a.stride_}; }
 
         friend bool operator==(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ == b.ptr_; };
         friend bool operator!=(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ != b.ptr_; };
+
+        friend bool operator<(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ < b.ptr_; }
+        friend bool operator<=(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ <= b.ptr_; }
 
         // distance between elements of the same row/column
         friend auto operator-(const ValueIterator& a, const ValueIterator& b)
@@ -142,9 +147,11 @@ public:
         }
 
         RowAndColIterator operator*() const { return *this; }
+        reference operator[](const difference_type n) { return *(begin() + n); }
 
-        RowAndColIterator operator+(const difference_type n) const { return RowAndColIterator{ptr_ + n * iter_stride_, iter_stride_, value_iter_stride_, value_iter_end_dist_}; }
-        RowAndColIterator operator-(const difference_type n) const { return RowAndColIterator{ptr_ - n * iter_stride_, iter_stride_, value_iter_stride_, value_iter_end_dist_}; }
+        friend RowAndColIterator operator+(const difference_type n, const RowAndColIterator& a) { return RowAndColIterator{a.ptr_ + n * a.iter_stride_, a.iter_stride_, a.value_iter_stride_, a.value_iter_end_dist_}; }
+        friend RowAndColIterator operator+(const RowAndColIterator& a, const difference_type n) { return RowAndColIterator{a.ptr_ + n * a.iter_stride_, a.iter_stride_, a.value_iter_stride_, a.value_iter_end_dist_}; }
+        friend RowAndColIterator operator-(const RowAndColIterator& a, const difference_type n) { return RowAndColIterator{a.ptr_ - n * a.iter_stride_, a.iter_stride_, a.value_iter_stride_, a.value_iter_end_dist_}; }
 
         friend bool operator==(const RowAndColIterator& a, const RowAndColIterator& b) { return a.ptr_ == b.ptr_; };
         friend bool operator!=(const RowAndColIterator& a, const RowAndColIterator& b) { return a.ptr_ != b.ptr_; };

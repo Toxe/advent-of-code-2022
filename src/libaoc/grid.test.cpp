@@ -2,6 +2,8 @@
 #include <numeric>
 
 #include "catch2/catch_test_macros.hpp"
+#include "fmt/core.h"
+#include "fmt/format.h"
 
 #include "grid.hpp"
 
@@ -24,6 +26,12 @@ int sum_values(Grid<int>::RowAndColIterator iter)
         sum += i;
 
     return sum;
+}
+
+std::ostream& operator<<(std::ostream& os, const Grid<int>::ValueIterator& iter)
+{
+    os << fmt::format("{} ({})", fmt::ptr(std::addressof(iter)), *iter);
+    return os;
 }
 
 TEST_CASE("Grid")
@@ -206,11 +214,21 @@ TEST_CASE("Grid")
             SECTION("operator+")
             {
                 CHECK(sum_values(grid.rows().begin() + 2) == 42);
+                CHECK(sum_values(2 + grid.rows().begin()) == 42);
             }
 
             SECTION("operator-")
             {
                 CHECK(sum_values(grid.rows().end() - 3) == 42);
+            }
+
+            SECTION("operator[]")
+            {
+                auto row = grid.row(2);
+
+                CHECK(row[0] == 9);
+                CHECK(row[1] == 10);
+                CHECK(row[2] == 11);
             }
 
             SECTION("std::next")
@@ -248,6 +266,158 @@ TEST_CASE("Grid")
 
         SECTION("row value iterator")
         {
+            SECTION("distance between elements")
+            {
+                auto p1 = grid.row(2).begin();
+                auto p2 = grid.row(2).end();
+
+                CHECK(p1 - p1 == 0);
+                CHECK(p1 - (p1 + 1) == 1);
+                CHECK(p1 - (p1 + 2) == 2);
+                CHECK(p1 - (p1 + 3) == 3);
+                CHECK((p1 + 1) - p1 == 1);
+                CHECK((p1 + 2) - p1 == 2);
+                CHECK((p1 + 3) - p1 == 3);
+                CHECK(p1 - p2 == 4);
+                CHECK(p2 - p1 == 4);
+            }
+
+            SECTION("bidirectional_iterator requirements")
+            {
+                auto iter = grid.row(2).begin();
+
+                // addressof(--a) == addressof(a)
+                {
+                    auto a = iter;
+                    CHECK(std::addressof(--a) == std::addressof(a));
+                }
+
+                // bool(a-- == b)
+                {
+                    auto a = iter;
+                    auto b = iter;
+                    CHECK(a-- == b);
+                }
+
+                // after evaluating both a-- and --b, bool(a == b) is still true
+                {
+                    auto a = iter;
+                    auto b = iter;
+                    a--;
+                    --b;
+                    CHECK(a == b);
+                }
+
+                // ++(--a) == b
+                {
+                    auto a = iter;
+                    auto b = iter;
+                    CHECK(++(--a) == b);
+                }
+
+                // --(++a) == b
+                {
+                    auto a = iter;
+                    auto b = iter;
+                    CHECK(--(++a) == b);
+                }
+            }
+
+            SECTION("random_access_iterator requirements")
+            {
+                auto iter1 = grid.row(2).begin();
+                auto iter2 = grid.row(2).end();
+
+                const auto n = iter2 - iter1;
+
+                // (a += n) is equal to b
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK((a += n) == b);
+                }
+
+                // std::addressof(a += n) is equal to std::addressof(a)
+                {
+                    auto a = iter1;
+                    CHECK(std::addressof(a += n) == std::addressof(a));
+                }
+
+                // (a + n) is equal to (a += n)
+                {
+                    auto a = iter1;
+                    auto a2 = iter1;
+                    CHECK((a + n) == (a2 += n));
+                }
+
+                // (a + n) is equal to (n + a)
+                {
+                    auto a = iter1;
+                    CHECK((a + n) == (n + a));
+                }
+
+                // for any two positive integers x and y, if a + (x + y) is valid, then a + (x + y) is equal to (a + x) + y
+                {
+                    auto a = iter1;
+                    const int x = 3;
+                    const int y = 7;
+                    CHECK((a + (x + y)) == ((a + x) + y));
+                }
+
+                // a + 0 is equal to a
+                {
+                    auto a = iter1;
+                    CHECK((a + 0) == a);
+                }
+
+                // if (a + (n - 1)) is valid, then --b is equal to (a + (n - 1))
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK((a + (n - 1)) == --b);
+                }
+
+                // (b += -n) and (b -= n) are both equal to a
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK((b += -n) == a);
+                }
+
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK((b -= n) == a);
+                }
+
+                // std::addressof(b -= n) is equal to std::addressof(b)
+                {
+                    auto b = iter2;
+                    CHECK(std::addressof(b -= n) == std::addressof(b));
+                }
+
+                // (b - n) is equal to (b -= n)
+                {
+                    auto b = iter2;
+                    auto b2 = iter2;
+                    CHECK((b - n) == (b2 -= n));
+                }
+
+                // if b is dereferenceable, then a[n] is valid and is equal to *b
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK(a[n] == *b);
+                }
+
+                // bool(a <= b) is true
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK(a <= b);
+                }
+            }
+
             SECTION("operator++")
             {
                 auto it = grid.row(2).begin();
@@ -285,6 +455,7 @@ TEST_CASE("Grid")
             SECTION("operator+")
             {
                 CHECK(*(grid.row(2).begin() + 2) == 11);
+                CHECK(*(2 + grid.row(2).begin()) == 11);
             }
 
             SECTION("operator-")
@@ -292,20 +463,28 @@ TEST_CASE("Grid")
                 CHECK(*(grid.row(2).end() - 3) == 10);
             }
 
-            SECTION("distance between elements")
+            SECTION("operator[]")
             {
-                auto p1 = grid.row(2).begin();
-                auto p2 = grid.row(2).end();
+                auto it = grid.row(2).begin();
 
-                CHECK(p1 - p1 == 0);
-                CHECK(p1 - (p1 + 1) == 1);
-                CHECK(p1 - (p1 + 2) == 2);
-                CHECK(p1 - (p1 + 3) == 3);
-                CHECK((p1 + 1) - p1 == 1);
-                CHECK((p1 + 2) - p1 == 2);
-                CHECK((p1 + 3) - p1 == 3);
-                CHECK(p1 - p2 == 4);
-                CHECK(p2 - p1 == 4);
+                CHECK(*it == 9);
+                CHECK(*(it + 1) == 10);
+                CHECK(*(it + 2) == 11);
+                CHECK(it[0] == 9);
+                CHECK(it[1] == 10);
+                CHECK(it[2] == 11);
+            }
+
+            SECTION("operator<")
+            {
+                CHECK(grid.row(0).begin() < grid.row(0).end());
+                CHECK((grid.row(0).begin() + 1) < (grid.row(0).begin() + 2));
+            }
+
+            SECTION("operator<=")
+            {
+                CHECK(grid.row(0).begin() <= grid.row(0).begin());
+                CHECK((grid.row(0).begin() + 2) <= (grid.row(0).begin() + 2));
             }
 
             SECTION("std::next")
@@ -354,6 +533,25 @@ TEST_CASE("Grid")
 
             CHECK(std::find(row.begin(), row.end(), 10) != row.end());
             CHECK(std::find(row.begin(), row.end(), 99) == row.end());
+        }
+
+        SECTION("std::sort")
+        {
+            auto row = grid.row(2);
+
+            std::sort(row.begin(), row.end(), std::greater{});  // sort in reverse order
+
+            CHECK(*(row.begin() + 0) == 12);
+            CHECK(*(row.begin() + 1) == 11);
+            CHECK(*(row.begin() + 2) == 10);
+            CHECK(*(row.begin() + 3) == 9);
+
+            std::sort(row.begin(), row.end());  // sort back to normal order
+
+            CHECK(*(row.begin() + 0) == 9);
+            CHECK(*(row.begin() + 1) == 10);
+            CHECK(*(row.begin() + 2) == 11);
+            CHECK(*(row.begin() + 3) == 12);
         }
     }
 
@@ -427,11 +625,21 @@ TEST_CASE("Grid")
             SECTION("operator+")
             {
                 CHECK(sum_values(grid.cols().begin() + 2) == 55);
+                CHECK(sum_values(2 + grid.cols().begin()) == 55);
             }
 
             SECTION("operator-")
             {
                 CHECK(sum_values(grid.cols().end() - 3) == 50);
+            }
+
+            SECTION("operator[]")
+            {
+                auto col = grid.col(2);
+
+                CHECK(col[0] == 3);
+                CHECK(col[1] == 7);
+                CHECK(col[2] == 11);
             }
 
             SECTION("std::next")
@@ -469,6 +677,160 @@ TEST_CASE("Grid")
 
         SECTION("column value iterator")
         {
+            SECTION("distance between elements")
+            {
+                auto p1 = grid.col(2).begin();
+                auto p2 = grid.col(2).end();
+
+                CHECK(p1 - p1 == 0);
+                CHECK(p1 - (p1 + 1) == 1);
+                CHECK(p1 - (p1 + 2) == 2);
+                CHECK(p1 - (p1 + 3) == 3);
+                CHECK(p1 - (p1 + 4) == 4);
+                CHECK((p1 + 1) - p1 == 1);
+                CHECK((p1 + 2) - p1 == 2);
+                CHECK((p1 + 3) - p1 == 3);
+                CHECK((p1 + 4) - p1 == 4);
+                CHECK(p1 - p2 == 5);
+                CHECK(p2 - p1 == 5);
+            }
+
+            SECTION("bidirectional_iterator requirements")
+            {
+                auto iter = grid.row(2).begin();
+
+                // addressof(--a) == addressof(a)
+                {
+                    auto a = iter;
+                    CHECK(std::addressof(--a) == std::addressof(a));
+                }
+
+                // bool(a-- == b)
+                {
+                    auto a = iter;
+                    auto b = iter;
+                    CHECK(a-- == b);
+                }
+
+                // after evaluating both a-- and --b, bool(a == b) is still true
+                {
+                    auto a = iter;
+                    auto b = iter;
+                    a--;
+                    --b;
+                    CHECK(a == b);
+                }
+
+                // ++(--a) == b
+                {
+                    auto a = iter;
+                    auto b = iter;
+                    CHECK(++(--a) == b);
+                }
+
+                // --(++a) == b
+                {
+                    auto a = iter;
+                    auto b = iter;
+                    CHECK(--(++a) == b);
+                }
+            }
+
+            SECTION("random_access_iterator requirements")
+            {
+                auto iter1 = grid.col(2).begin();
+                auto iter2 = grid.col(2).end();
+
+                const auto n = iter2 - iter1;
+
+                // (a += n) is equal to b
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK((a += n) == b);
+                }
+
+                // std::addressof(a += n) is equal to std::addressof(a)
+                {
+                    auto a = iter1;
+                    CHECK(std::addressof(a += n) == std::addressof(a));
+                }
+
+                // (a + n) is equal to (a += n)
+                {
+                    auto a = iter1;
+                    auto a2 = iter1;
+                    CHECK((a + n) == (a2 += n));
+                }
+
+                // (a + n) is equal to (n + a)
+                {
+                    auto a = iter1;
+                    CHECK((a + n) == (n + a));
+                }
+
+                // for any two positive integers x and y, if a + (x + y) is valid, then a + (x + y) is equal to (a + x) + y
+                {
+                    auto a = iter1;
+                    const int x = 3;
+                    const int y = 7;
+                    CHECK((a + (x + y)) == ((a + x) + y));
+                }
+
+                // a + 0 is equal to a
+                {
+                    auto a = iter1;
+                    CHECK((a + 0) == a);
+                }
+
+                // if (a + (n - 1)) is valid, then --b is equal to (a + (n - 1))
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK((a + (n - 1)) == --b);
+                }
+
+                // (b += -n) and (b -= n) are both equal to a
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK((b += -n) == a);
+                }
+
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK((b -= n) == a);
+                }
+
+                // std::addressof(b -= n) is equal to std::addressof(b)
+                {
+                    auto b = iter2;
+                    CHECK(std::addressof(b -= n) == std::addressof(b));
+                }
+
+                // (b - n) is equal to (b -= n)
+                {
+                    auto b = iter2;
+                    auto b2 = iter2;
+                    CHECK((b - n) == (b2 -= n));
+                }
+
+                // if b is dereferenceable, then a[n] is valid and is equal to *b
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK(a[n] == *b);
+                }
+
+                // bool(a <= b) is true
+                {
+                    auto a = iter1;
+                    auto b = iter2;
+                    CHECK(a <= b);
+                }
+            }
+
             SECTION("operator++")
             {
                 auto it = grid.col(2).begin();
@@ -506,6 +868,7 @@ TEST_CASE("Grid")
             SECTION("operator+")
             {
                 CHECK(*(grid.col(2).begin() + 2) == 11);
+                CHECK(*(2 + grid.col(2).begin()) == 11);
             }
 
             SECTION("operator-")
@@ -513,22 +876,28 @@ TEST_CASE("Grid")
                 CHECK(*(grid.col(2).end() - 3) == 11);
             }
 
-            SECTION("distance between elements")
+            SECTION("operator[]")
             {
-                auto p1 = grid.col(2).begin();
-                auto p2 = grid.col(2).end();
+                auto it = grid.col(2).begin();
 
-                CHECK(p1 - p1 == 0);
-                CHECK(p1 - (p1 + 1) == 1);
-                CHECK(p1 - (p1 + 2) == 2);
-                CHECK(p1 - (p1 + 3) == 3);
-                CHECK(p1 - (p1 + 4) == 4);
-                CHECK((p1 + 1) - p1 == 1);
-                CHECK((p1 + 2) - p1 == 2);
-                CHECK((p1 + 3) - p1 == 3);
-                CHECK((p1 + 4) - p1 == 4);
-                CHECK(p1 - p2 == 5);
-                CHECK(p2 - p1 == 5);
+                CHECK(*it == 3);
+                CHECK(*(it + 1) == 7);
+                CHECK(*(it + 2) == 11);
+                CHECK(it[0] == 3);
+                CHECK(it[1] == 7);
+                CHECK(it[2] == 11);
+            }
+
+            SECTION("operator<")
+            {
+                CHECK(grid.row(0).begin() < grid.row(0).end());
+                CHECK((grid.row(0).begin() + 1) < (grid.row(0).begin() + 2));
+            }
+
+            SECTION("operator<=")
+            {
+                CHECK(grid.row(0).begin() <= grid.row(0).begin());
+                CHECK((grid.row(0).begin() + 2) <= (grid.row(0).begin() + 2));
             }
 
             SECTION("std::next")
@@ -577,6 +946,27 @@ TEST_CASE("Grid")
 
             CHECK(std::find(col.begin(), col.end(), 11) != col.end());
             CHECK(std::find(col.begin(), col.end(), 99) == col.end());
+        }
+
+        SECTION("std::sort")
+        {
+            auto col = grid.col(2);
+
+            std::sort(col.begin(), col.end(), std::greater{});  // sort in reverse order
+
+            CHECK(*(col.begin() + 0) == 19);
+            CHECK(*(col.begin() + 1) == 15);
+            CHECK(*(col.begin() + 2) == 11);
+            CHECK(*(col.begin() + 3) == 7);
+            CHECK(*(col.begin() + 4) == 3);
+
+            std::sort(col.begin(), col.end());  // sort back to normal order
+
+            CHECK(*(col.begin() + 0) == 3);
+            CHECK(*(col.begin() + 1) == 7);
+            CHECK(*(col.begin() + 2) == 11);
+            CHECK(*(col.begin() + 3) == 15);
+            CHECK(*(col.begin() + 4) == 19);
         }
     }
 }
