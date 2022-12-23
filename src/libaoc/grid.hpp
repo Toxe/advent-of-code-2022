@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cassert>
-#include <cmath>
 #include <cstddef>
 #include <iterator>
 #include <vector>
@@ -80,7 +79,7 @@ public:
         {
             assert(a.stride_ == b.stride_);
 
-            return std::abs((a.ptr_ - b.ptr_) / a.stride_);
+            return (a.ptr_ - b.ptr_) / a.stride_;
         };
 
     private:

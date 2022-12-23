@@ -268,18 +268,18 @@ TEST_CASE("Grid")
         {
             SECTION("distance between elements")
             {
-                auto p1 = grid.row(2).begin();
-                auto p2 = grid.row(2).end();
+                auto first = grid.row(2).begin();
+                auto last = grid.row(2).end();
 
-                CHECK(p1 - p1 == 0);
-                CHECK(p1 - (p1 + 1) == 1);
-                CHECK(p1 - (p1 + 2) == 2);
-                CHECK(p1 - (p1 + 3) == 3);
-                CHECK((p1 + 1) - p1 == 1);
-                CHECK((p1 + 2) - p1 == 2);
-                CHECK((p1 + 3) - p1 == 3);
-                CHECK(p1 - p2 == 4);
-                CHECK(p2 - p1 == 4);
+                CHECK(first - first == 0);
+                CHECK((first + 1) - first == 1);
+                CHECK((first + 2) - first == 2);
+                CHECK((first + 3) - first == 3);
+                CHECK(first - (first + 1) == -1);
+                CHECK(first - (first + 2) == -2);
+                CHECK(first - (first + 3) == -3);
+                CHECK(first - last == -4);
+                CHECK(last - first == 4);
             }
 
             SECTION("bidirectional_iterator requirements")
@@ -517,6 +517,7 @@ TEST_CASE("Grid")
             SECTION("std::distance")
             {
                 CHECK(std::distance(grid.row(1).begin(), grid.row(1).end()) == 4);
+                CHECK(std::distance(grid.row(1).end(), grid.row(1).begin()) == -4);
             }
         }
 
@@ -679,20 +680,20 @@ TEST_CASE("Grid")
         {
             SECTION("distance between elements")
             {
-                auto p1 = grid.col(2).begin();
-                auto p2 = grid.col(2).end();
+                auto first = grid.col(2).begin();
+                auto last = grid.col(2).end();
 
-                CHECK(p1 - p1 == 0);
-                CHECK(p1 - (p1 + 1) == 1);
-                CHECK(p1 - (p1 + 2) == 2);
-                CHECK(p1 - (p1 + 3) == 3);
-                CHECK(p1 - (p1 + 4) == 4);
-                CHECK((p1 + 1) - p1 == 1);
-                CHECK((p1 + 2) - p1 == 2);
-                CHECK((p1 + 3) - p1 == 3);
-                CHECK((p1 + 4) - p1 == 4);
-                CHECK(p1 - p2 == 5);
-                CHECK(p2 - p1 == 5);
+                CHECK(first - first == 0);
+                CHECK((first + 1) - first == 1);
+                CHECK((first + 2) - first == 2);
+                CHECK((first + 3) - first == 3);
+                CHECK((first + 4) - first == 4);
+                CHECK(first - (first + 1) == -1);
+                CHECK(first - (first + 2) == -2);
+                CHECK(first - (first + 3) == -3);
+                CHECK(first - (first + 4) == -4);
+                CHECK(first - last == -5);
+                CHECK(last - first == 5);
             }
 
             SECTION("bidirectional_iterator requirements")
@@ -930,6 +931,7 @@ TEST_CASE("Grid")
             SECTION("std::distance")
             {
                 CHECK(std::distance(grid.col(1).begin(), grid.col(1).end()) == 5);
+                CHECK(std::distance(grid.col(1).end(), grid.col(1).begin()) == -5);
             }
         }
 

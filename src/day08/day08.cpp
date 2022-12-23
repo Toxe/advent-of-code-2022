@@ -1,6 +1,7 @@
 #include "day08.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <numeric>
 
 constexpr int direction_forward = 1;
@@ -39,7 +40,7 @@ int calc_scenic_score(ByteGrid::RowAndColIterator& row_or_col_iter, const int co
 
     for (auto it = start_pos; it != end; it += direction)
         if (*it >= *current_tree_pos)
-            return static_cast<int>((start_pos - it) + 1);
+            return static_cast<int>(std::abs(std::distance(it, start_pos)) + 1);
 
     return direction > 0 ? static_cast<int>(end_of_row_or_col - start_pos) : col_or_row_index;
 }
