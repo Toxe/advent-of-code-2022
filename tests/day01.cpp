@@ -4,9 +4,9 @@
 #include "read_input.hpp"
 #include "test_helpers.hpp"
 
-#include "day01.hpp"
+#include "../src/day01/day01.hpp"
 
-TEST_CASE("works with example input")
+TEST_CASE("day 01: works with example input")
 {
     const GroupedNumbers grouped_numbers = {
         {1000, 2000, 3000},
@@ -27,7 +27,7 @@ TEST_CASE("works with example input")
     }
 }
 
-TEST_CASE("works with puzzle input")
+TEST_CASE("day 01: works with puzzle input")
 {
     auto input_stream = open_input_file(find_input_file("day01"));
     REQUIRE(input_stream.has_value());

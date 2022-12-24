@@ -34,7 +34,7 @@ std::ostream& operator<<(std::ostream& os, const Grid<int>::ValueIterator& iter)
     return os;
 }
 
-TEST_CASE("Grid")
+TEST_CASE("libaoc: Grid")
 {
     SECTION("can create new Grid with default initialized elements")
     {

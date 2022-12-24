@@ -3,9 +3,9 @@
 #include "read_input.hpp"
 #include "test_helpers.hpp"
 
-#include "day04.hpp"
+#include "../src/day04/day04.hpp"
 
-TEST_CASE("works with example input")
+TEST_CASE("day 04: works with example input")
 {
     const std::vector<std::string> lines = {
         "2-4,6-8",
@@ -27,7 +27,7 @@ TEST_CASE("works with example input")
     }
 }
 
-TEST_CASE("works with puzzle input")
+TEST_CASE("day 04: works with puzzle input")
 {
     auto input_stream = open_input_file(find_input_file("day04"));
     REQUIRE(input_stream.has_value());

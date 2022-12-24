@@ -6,9 +6,9 @@
 #include "read_input.hpp"
 #include "test_helpers.hpp"
 
-#include "day08.hpp"
+#include "../src/day08/day08.hpp"
 
-TEST_CASE("works with example input")
+TEST_CASE("day 08: works with example input")
 {
     std::istringstream input{
         "30373\n"
@@ -30,7 +30,7 @@ TEST_CASE("works with example input")
     }
 }
 
-TEST_CASE("works with puzzle input")
+TEST_CASE("day 08: works with puzzle input")
 {
     auto input_stream = open_input_file(find_input_file("day08"));
     REQUIRE(input_stream.has_value());

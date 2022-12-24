@@ -3,9 +3,9 @@
 #include "read_input.hpp"
 #include "test_helpers.hpp"
 
-#include "day09.hpp"
+#include "../src/day09/day09.hpp"
 
-TEST_CASE("works with example input")
+TEST_CASE("day 09: works with example input")
 {
     SECTION("part 1")
     {
@@ -52,7 +52,7 @@ TEST_CASE("works with example input")
     }
 }
 
-TEST_CASE("works with puzzle input")
+TEST_CASE("day 09: works with puzzle input")
 {
     auto input_stream = open_input_file(find_input_file("day09"));
     REQUIRE(input_stream.has_value());

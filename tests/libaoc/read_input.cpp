@@ -8,7 +8,7 @@
 #include "read_input.hpp"
 #include "test_helpers.hpp"
 
-TEST_CASE("file_exists()")
+TEST_CASE("libaoc: file_exists()")
 {
     SECTION("returns true if file exists")
     {
@@ -25,7 +25,7 @@ TEST_CASE("file_exists()")
     }
 }
 
-TEST_CASE("get_input_filename()")
+TEST_CASE("libaoc: get_input_filename()")
 {
     SECTION("needs at least two command line arguments")
     {
@@ -36,7 +36,7 @@ TEST_CASE("get_input_filename()")
     }
 }
 
-TEST_CASE("open_input_file()")
+TEST_CASE("libaoc: open_input_file()")
 {
     SECTION("returns an open input file stream")
     {
@@ -62,7 +62,7 @@ TEST_CASE("open_input_file()")
     }
 }
 
-TEST_CASE("read_single_line()")
+TEST_CASE("libaoc: read_single_line()")
 {
     SECTION("reads one line")
     {
@@ -96,7 +96,7 @@ TEST_CASE("read_single_line()")
     }
 }
 
-TEST_CASE("read_lines_and_preserve_empty_lines()")
+TEST_CASE("libaoc: read_lines_and_preserve_empty_lines()")
 {
     SECTION("reads all lines")
     {
@@ -156,7 +156,7 @@ TEST_CASE("read_lines_and_preserve_empty_lines()")
     }
 }
 
-TEST_CASE("read_lines_and_remove_empty_lines()")
+TEST_CASE("libaoc: read_lines_and_remove_empty_lines()")
 {
     SECTION("reads all lines")
     {

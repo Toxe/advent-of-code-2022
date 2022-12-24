@@ -5,7 +5,7 @@
 
 #include "read_grouped_numbers.hpp"
 
-TEST_CASE("read_grouped_numbers()")
+TEST_CASE("libaoc: read_grouped_numbers()")
 {
     SECTION("reads all groups and numbers")
     {

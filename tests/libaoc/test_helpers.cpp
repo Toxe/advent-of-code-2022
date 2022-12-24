@@ -2,7 +2,7 @@
 
 #include "test_helpers.hpp"
 
-TEST_CASE("TempFile")
+TEST_CASE("libaoc: TempFile")
 {
     SECTION("creates a file and automatically deletes it")
     {

@@ -2,7 +2,7 @@
 
 #include "coords.hpp"
 
-TEST_CASE("Coords")
+TEST_CASE("libaoc: Coords")
 {
     SECTION("creation")
     {

@@ -20,7 +20,7 @@ void check_grid_values(const ByteGrid& grid)
     CHECK(grid.value(3, 2) == 6);
 }
 
-TEST_CASE("read_digit_grid()")
+TEST_CASE("libaoc: read_digit_grid()")
 {
     SECTION("reads all digits")
     {

@@ -3,7 +3,7 @@
 #include "grid.hpp"
 #include "gridcell.hpp"
 
-TEST_CASE("GridCell")
+TEST_CASE("libaoc: GridCell")
 {
     SECTION("can get coordinates")
     {
