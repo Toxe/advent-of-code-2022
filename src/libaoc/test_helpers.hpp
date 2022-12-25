@@ -1,13 +1,15 @@
 #pragma once
 
-#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <optional>
 #include <string>
 
+std::optional<std::string> find_input_file(const std::string& day);
+std::string generate_temp_file_name();
+
 struct TempFile {
-    TempFile() : name(std::tmpnam(nullptr))
+    TempFile() : name(generate_temp_file_name())
     {
         file = std::ofstream{name, std::ios::binary};
     }
@@ -23,5 +25,3 @@ struct TempFile {
     std::string name;
     std::ofstream file;
 };
-
-std::optional<std::string> find_input_file(const std::string& day);

@@ -19,7 +19,7 @@ TEST_CASE("libaoc: file_exists()")
 
     SECTION("returns false if file does not exist")
     {
-        const char* tmp_filename = std::tmpnam(nullptr);
+        const auto tmp_filename = generate_temp_file_name();
 
         CHECK(file_exists(tmp_filename) == false);
     }
@@ -52,9 +52,9 @@ TEST_CASE("libaoc: open_input_file()")
 
     SECTION("file must exist")
     {
-        const char* tmp_filename = std::tmpnam(nullptr);
+        const auto tmp_filename = generate_temp_file_name();
 
-        std::vector<const char*> args{"program", tmp_filename};
+        std::vector<const char*> args{"program", tmp_filename.c_str()};
         const auto input_filename = get_input_filename(args);
         auto input_stream = open_input_file(input_filename);
 
