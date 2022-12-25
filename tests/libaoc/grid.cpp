@@ -325,8 +325,8 @@ TEST_CASE("libaoc: Grid")
 
             SECTION("random_access_iterator requirements")
             {
-                auto iter1 = grid.row(2).begin();
-                auto iter2 = grid.row(2).end();
+                auto iter1 = grid.row(2).begin() + 1;
+                auto iter2 = grid.row(2).end() - 2;
 
                 const auto n = iter2 - iter1;
 
@@ -739,8 +739,8 @@ TEST_CASE("libaoc: Grid")
 
             SECTION("random_access_iterator requirements")
             {
-                auto iter1 = grid.col(2).begin();
-                auto iter2 = grid.col(2).end();
+                auto iter1 = grid.col(2).begin() + 1;
+                auto iter2 = grid.col(2).end() - 2;
 
                 const auto n = iter2 - iter1;
 
