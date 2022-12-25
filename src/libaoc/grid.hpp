@@ -70,9 +70,10 @@ public:
 
         friend bool operator==(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ == b.ptr_; };
         friend bool operator!=(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ != b.ptr_; };
-
         friend bool operator<(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ < b.ptr_; }
+        friend bool operator>(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ > b.ptr_; }
         friend bool operator<=(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ <= b.ptr_; }
+        friend bool operator>=(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ >= b.ptr_; }
 
         // distance between elements of the same row/column
         friend auto operator-(const ValueIterator& a, const ValueIterator& b)
