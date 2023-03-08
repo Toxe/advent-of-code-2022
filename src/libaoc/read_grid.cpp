@@ -27,11 +27,11 @@ ByteGrid read_digit_grid(std::istream& input)
         data.push_back(values);
     }
 
-    ByteGrid grid{static_cast<int>(data[0].size()), static_cast<int>(data.size())};
+    ByteGrid grid{static_cast<int>(data.size()), static_cast<int>(data[0].size())};
 
     for (std::size_t row = 0; row < data.size(); ++row)
         for (std::size_t col = 0; col < data[row].size(); ++col)
-            grid.value(static_cast<int>(col), static_cast<int>(row)) = data[row][col];
+            grid[static_cast<ByteGrid::size_type>(row)][static_cast<ByteGrid::size_type>(col)] = data[row][col];
 
     return grid;
 }

@@ -11,7 +11,7 @@ int main(int argc, const char* argv[])
     if (!input_stream)
         return 1;
 
-    auto grid = read_digit_grid(*input_stream);
+    const auto grid = read_digit_grid(*input_stream);
 
     print_result(8, 1, day08_part1(grid));
     print_result(8, 2, day08_part2(grid));

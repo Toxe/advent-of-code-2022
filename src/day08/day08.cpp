@@ -4,84 +4,73 @@
 #include <cmath>
 #include <numeric>
 
-constexpr int direction_forward = 1;
-constexpr int direction_backward = -1;
-
-void mark_highest_trees(ByteGrid::RowAndColIterator& row_or_col_iter, Grid<char>::RowAndColIterator& marked_trees_iter, const int direction)
+template <typename ValueIter, typename MarkedTreeIter>
+void mark_highest_trees(ValueIter begin, ValueIter end, MarkedTreeIter marked_trees_iter)
 {
-    const auto begin = direction > 0 ? row_or_col_iter.begin() : row_or_col_iter.end() - 1;
-    const auto end = direction > 0 ? row_or_col_iter.end() : row_or_col_iter.begin() - 1;
-
-    auto current_marked_tree = direction > 0 ? marked_trees_iter.begin() : marked_trees_iter.end() - 1;
     char highest_tree = -1;
 
-    for (auto it = begin; it != end; it += direction) {
+    for (auto it = begin; it != end; ++it) {
         const auto tree = static_cast<char>(*it);
 
         if (tree > highest_tree) {
             highest_tree = tree;
-            *current_marked_tree = tree;
+            *marked_trees_iter = tree;
         }
 
         if (tree == 9)
             break;
 
-        current_marked_tree += direction;
+        ++marked_trees_iter;
     }
 }
 
-int calc_scenic_score(ByteGrid::RowAndColIterator& row_or_col_iter, const int col_or_row_index, const int direction)
+template <typename ValueIter>
+int calc_scenic_score(ValueIter begin, ValueIter end)
 {
-    const auto begin_of_row_or_col = row_or_col_iter.begin();
-    const auto end_of_row_or_col = row_or_col_iter.end();
-    const auto current_tree_pos = begin_of_row_or_col + col_or_row_index;
-    const auto start_pos = current_tree_pos + direction;
-    const auto end = direction > 0 ? end_of_row_or_col : begin_of_row_or_col - 1;
+    const auto current_tree = *begin;
 
-    for (auto it = start_pos; it != end; it += direction)
-        if (*it >= *current_tree_pos)
-            return static_cast<int>(std::abs(std::distance(it, start_pos)) + 1);
+    if (const auto it = std::find_if(begin + 1, end, [&](auto tree) { return tree >= current_tree; }); it != end)
+        return static_cast<int>(it - begin);
 
-    return direction > 0 ? static_cast<int>(end_of_row_or_col - start_pos) : col_or_row_index;
+    return static_cast<int>(end - begin - 1);
 }
 
-int scenic_score(ByteGrid& grid, const int col, const int row)
+int scenic_score(const ByteGrid& grid, const int col, const int row)
 {
-    auto search_row = grid.row(row);
-    auto search_col = grid.col(col);
+    const auto search_row = grid.row(row);
+    const auto search_col = grid.col(col);
 
-    const auto r = calc_scenic_score(search_row, col, direction_forward);
-    const auto l = calc_scenic_score(search_row, col, direction_backward);
-    const auto u = calc_scenic_score(search_col, row, direction_forward);
-    const auto d = calc_scenic_score(search_col, row, direction_backward);
+    const auto r = calc_scenic_score(search_row.begin() + col, search_row.end());
+    const auto l = calc_scenic_score(search_row.rbegin() + (grid.width() - col - 1), search_row.rend());
+    const auto d = calc_scenic_score(search_col.begin() + row, search_col.end());
+    const auto u = calc_scenic_score(search_col.rbegin() + (grid.height() - row - 1), search_col.rend());
 
-    return r * l * u * d;
+    return r * l * d * u;
 }
 
-int day08_part1(ByteGrid& grid)
+template <typename GridRowsOrCols, typename MarkedTreesRowsOrCols>
+void mark_trees_in_row_or_col(GridRowsOrCols rows_or_cols, MarkedTreesRowsOrCols marked_trees_rows_or_cols)
+{
+    auto marked_trees_rows_or_cols_iter = marked_trees_rows_or_cols.begin();
+
+    for (auto row_or_col : rows_or_cols) {
+        mark_highest_trees(row_or_col.begin(), row_or_col.end(), marked_trees_rows_or_cols_iter->begin());
+        mark_highest_trees(row_or_col.rbegin(), row_or_col.rend(), marked_trees_rows_or_cols_iter->rbegin());
+        ++marked_trees_rows_or_cols_iter;
+    }
+}
+
+int day08_part1(const ByteGrid& grid)
 {
     Grid<char> marked_trees{grid.width(), grid.height(), -1};
 
-    auto marked_trees_row = marked_trees.rows().begin();
-
-    for (auto row : grid.rows()) {
-        mark_highest_trees(row, marked_trees_row, direction_forward);
-        mark_highest_trees(row, marked_trees_row, direction_backward);
-        ++marked_trees_row;
-    }
-
-    auto marked_trees_col = marked_trees.cols().begin();
-
-    for (auto col : grid.cols()) {
-        mark_highest_trees(col, marked_trees_col, direction_forward);
-        mark_highest_trees(col, marked_trees_col, direction_backward);
-        ++marked_trees_col;
-    }
+    mark_trees_in_row_or_col(grid.rows(), marked_trees.rows());
+    mark_trees_in_row_or_col(grid.cols(), marked_trees.cols());
 
     return static_cast<int>(std::count_if(marked_trees.cbegin(), marked_trees.cend(), [](auto tree) { return tree >= 0; }));
 }
 
-int day08_part2(ByteGrid& grid)
+int day08_part2(const ByteGrid& grid)
 {
     int max_score = 0;
 

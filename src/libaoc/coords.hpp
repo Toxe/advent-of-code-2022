@@ -1,44 +1,52 @@
 #pragma once
 
+#include <compare>
+
 struct Coords {
-    void move(int dx, int dy);
-    void move(const Coords& delta);
-
-    void move_horizontally(int distance);
-    void move_vertically(int distance);
-
-    void move_up(int distance);
-    void move_down(int distance);
-    void move_left(int distance);
-    void move_right(int distance);
-
-    void move_north(int distance);
-    void move_south(int distance);
-    void move_west(int distance);
-    void move_east(int distance);
-
     int x = 0;
     int y = 0;
+
+    void move(const int dx, const int dy)
+    {
+        x += dx;
+        y += dy;
+    }
+
+    void move(const Coords& delta)
+    {
+        x += delta.x;
+        y += delta.y;
+    }
+
+    void move_horizontally(const int distance) { x += distance; }
+    void move_vertically(const int distance) { y += distance; }
+
+    void move_up(const int distance = 1) { move_vertically(-distance); }
+    void move_down(const int distance = 1) { move_vertically(distance); }
+    void move_left(const int distance = 1) { move_horizontally(-distance); }
+    void move_right(const int distance = 1) { move_horizontally(distance); }
+
+    void move_north(const int distance = 1) { move_vertically(-distance); }
+    void move_south(const int distance = 1) { move_vertically(distance); }
+    void move_west(const int distance = 1) { move_horizontally(-distance); }
+    void move_east(const int distance = 1) { move_horizontally(distance); }
+
+    Coords operator+(const Coords& other) const { return Coords{x + other.x, y + other.y}; }
+    Coords operator-(const Coords& other) const { return Coords{x - other.x, y - other.y}; }
+
+    Coords& operator+=(const Coords& other)
+    {
+        x += other.x;
+        y += other.y;
+        return *this;
+    }
+
+    Coords& operator-=(const Coords& other)
+    {
+        x -= other.x;
+        y -= other.y;
+        return *this;
+    }
+
+    auto operator<=>(const Coords& rhs) const = default;
 };
-
-inline bool operator==(const Coords& lhs, const Coords& rhs) { return lhs.x == rhs.x && lhs.y == rhs.y; }
-inline bool operator!=(const Coords& lhs, const Coords& rhs) { return !(lhs == rhs); }
-inline bool operator<(const Coords& lhs, const Coords& rhs) { return (lhs.x < rhs.x) || (lhs.x == rhs.x && lhs.y < rhs.y); }
-inline bool operator>(const Coords& lhs, const Coords& rhs) { return (lhs.x > rhs.x) || (lhs.x == rhs.x && lhs.y > rhs.y); }
-
-inline Coords operator+(const Coords& lhs, const Coords& rhs) { return Coords{lhs.x + rhs.x, lhs.y + rhs.y}; }
-inline Coords operator-(const Coords& lhs, const Coords& rhs) { return Coords{lhs.x - rhs.x, lhs.y - rhs.y}; }
-
-inline Coords& operator+=(Coords& lhs, const Coords& rhs)
-{
-    lhs.x += rhs.x;
-    lhs.y += rhs.y;
-    return lhs;
-}
-
-inline Coords& operator-=(Coords& lhs, const Coords& rhs)
-{
-    lhs.x -= rhs.x;
-    lhs.y -= rhs.y;
-    return lhs;
-}

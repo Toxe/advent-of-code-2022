@@ -235,7 +235,7 @@ void example_input_day08()
         "33549\n"
         "35390\n"};
 
-    auto grid = read_digit_grid(input);
+    const auto grid = read_digit_grid(input);
 
     ankerl::nanobench::Bench().epochs(1000).run("example input: day 08, part 1", [&] {
         const auto result = day08_part1(grid);
@@ -595,7 +595,7 @@ void puzzle_input_day08()
     std::ofstream out2("puzzle_input_day08_part2.json");
 
     auto input_stream = open_input_file(find_input_file("day08"));
-    auto grid = read_digit_grid(*input_stream);
+    const auto grid = read_digit_grid(*input_stream);
 
     ankerl::nanobench::Bench().epochs(1000).run("puzzle input: day 08, part 1", [&] {
         const auto result = day08_part1(grid);

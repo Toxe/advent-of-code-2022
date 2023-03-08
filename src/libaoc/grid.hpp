@@ -1,29 +1,42 @@
 #pragma once
 
 #include <cassert>
-#include <cstddef>
+#include <compare>
 #include <iterator>
 #include <vector>
 
-#include "coords.hpp"
-
-template <typename T>
-class GridCell;
+#include "gridcell.hpp"
 
 template <typename T>
 class Grid {
 public:
+    using difference_type = std::ptrdiff_t;
+    using size_type = std::ptrdiff_t;
+
+    constexpr static difference_type direction_forward = 1;
+    constexpr static difference_type direction_reverse = -1;
+
+private:
+    template <typename pointer, typename reference>
     class ValueIterator {
     public:
         using iterator_category = std::random_access_iterator_tag;
         using value_type = T;
-        using difference_type = std::ptrdiff_t;
-        using pointer = value_type*;
-        using reference = value_type&;
+        using difference_type = Grid::difference_type;
 
-        ValueIterator(pointer ptr, const difference_type stride) : ptr_{ptr}, stride_{stride} { }
+        ValueIterator() : ptr_{}, stride_{} { }
+        ValueIterator(pointer ptr, const difference_type stride)
+        {
+            assert(ptr != nullptr);
+            assert(stride > 0);
+            ptr_ = ptr;
+            stride_ = stride;
+        }
 
-        constexpr ValueIterator& operator++()
+        reference operator*() const { return *ptr_; }
+        pointer operator->() const { return ptr_; }
+
+        ValueIterator& operator++()
         {
             ptr_ += stride_;
             return *this;
@@ -31,8 +44,8 @@ public:
 
         ValueIterator operator++(int)
         {
-            const ValueIterator tmp = *this;
-            ptr_ += stride_;
+            const ValueIterator tmp{*this};
+            ++(*this);
             return tmp;
         }
 
@@ -44,276 +57,377 @@ public:
 
         ValueIterator operator--(int)
         {
-            const ValueIterator tmp = *this;
-            ptr_ -= stride_;
+            const ValueIterator tmp{*this};
+            --(*this);
             return tmp;
         }
 
-        ValueIterator& operator+=(const difference_type n)
+        ValueIterator& operator+=(const difference_type off)
         {
-            ptr_ += (n * stride_);
+            ptr_ += off * stride_;
             return *this;
         }
 
-        ValueIterator& operator-=(const difference_type n)
+        ValueIterator& operator-=(const difference_type off)
         {
-            ptr_ -= (n * stride_);
+            ptr_ -= off * stride_;
             return *this;
         }
 
-        reference operator*() const { return *ptr_; }
-        reference operator[](const difference_type n) { return *(ptr_ + n * stride_); }
-
-        friend ValueIterator operator+(const difference_type n, const ValueIterator& a) { return ValueIterator{a.ptr_ + n * a.stride_, a.stride_}; }
-        friend ValueIterator operator+(const ValueIterator& a, const difference_type n) { return ValueIterator{a.ptr_ + n * a.stride_, a.stride_}; }
-        friend ValueIterator operator-(const ValueIterator& a, const difference_type n) { return ValueIterator{a.ptr_ - n * a.stride_, a.stride_}; }
-
-        friend bool operator==(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ == b.ptr_; };
-        friend bool operator!=(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ != b.ptr_; };
-        friend bool operator<(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ < b.ptr_; }
-        friend bool operator>(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ > b.ptr_; }
-        friend bool operator<=(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ <= b.ptr_; }
-        friend bool operator>=(const ValueIterator& a, const ValueIterator& b) { return a.ptr_ >= b.ptr_; }
-
-        // distance between elements of the same row/column
-        friend auto operator-(const ValueIterator& a, const ValueIterator& b)
+        ValueIterator operator+(const difference_type off) const { return ValueIterator{ptr_ + off * stride_, stride_}; }
+        ValueIterator operator-(const difference_type off) const { return ValueIterator{ptr_ - off * stride_, stride_}; }
+        friend ValueIterator operator+(const difference_type off, const ValueIterator& a) { return ValueIterator{a.ptr_ + off * a.stride_, a.stride_}; }
+        friend difference_type operator-(const ValueIterator& a, const ValueIterator& b)
         {
             assert(a.stride_ == b.stride_);
-
             return (a.ptr_ - b.ptr_) / a.stride_;
         };
+
+        reference operator[](const difference_type off) const { return *(ptr_ + off * stride_); }
+
+        auto operator<=>(const ValueIterator& rhs) const { return ptr_ <=> rhs.ptr_; }
+        bool operator==(const ValueIterator& rhs) const { return ptr_ == rhs.ptr_; }
 
     private:
         pointer ptr_;
         difference_type stride_;
     };
 
-    class RowAndColIterator {
+    template <typename pointer, typename reference>
+    class RowOrCol {
     public:
-        using iterator_category = std::bidirectional_iterator_tag;
-        using value_type = T;
-        using difference_type = std::ptrdiff_t;
-        using pointer = value_type*;
-        using reference = value_type&;
+        using const_pointer = const T*;
+        using const_reference = const T&;
+        using difference_type = Grid::difference_type;
+        using size_type = Grid::size_type;
+        using iterator = ValueIterator<pointer, reference>;
+        using const_iterator = ValueIterator<const_pointer, const_reference>;
+        using reverse_iterator = std::reverse_iterator<iterator>;
+        using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-        RowAndColIterator(
-            pointer begin,
-            difference_type iter_stride,
-            difference_type value_iter_stride,
-            difference_type value_iter_end_diff)
-            : ptr_{begin},
-              iter_stride_{iter_stride},
-              value_iter_stride_{value_iter_stride},
-              value_iter_end_dist_{value_iter_end_diff}
+        RowOrCol() : ptr_{}, size_{}, stride_{}, value_iter_stride_{} { }
+        RowOrCol(pointer ptr, const size_type size, const difference_type stride, const difference_type value_iter_stride)
         {
+            assert(ptr != nullptr);
+            assert(size > 0);
+            assert(stride > 0);
+            assert(value_iter_stride > 0);
+            ptr_ = ptr;
+            size_ = size;
+            stride_ = stride;
+            value_iter_stride_ = value_iter_stride;
         }
 
-        RowAndColIterator& operator++()
+        size_type size() const { return size_; }
+
+        iterator begin() { return iterator{ptr_, value_iter_stride_}; }
+        const_iterator begin() const { return const_iterator{ptr_, value_iter_stride_}; }
+        const_iterator cbegin() const { return begin(); }
+
+        iterator end() { return iterator{ptr_ + size_ * value_iter_stride_, value_iter_stride_}; }
+        const_iterator end() const { return const_iterator{ptr_ + size_ * value_iter_stride_, value_iter_stride_}; }
+        const_iterator cend() const { return end(); }
+
+        reverse_iterator rbegin() { return reverse_iterator{end()}; }
+        const_reverse_iterator rbegin() const { return const_reverse_iterator{end()}; }
+        const_reverse_iterator crbegin() const { return rbegin(); }
+
+        reverse_iterator rend() { return reverse_iterator{begin()}; }
+        const_reverse_iterator rend() const { return const_reverse_iterator{begin()}; }
+        const_reverse_iterator crend() const { return rend(); }
+
+        reference front() { return *begin(); }
+        const_reference front() const { return *begin(); }
+
+        reference back() { return *(end() - 1); }
+        const_reference back() const { return *(end() - 1); }
+
+        friend difference_type operator-(const RowOrCol& a, const RowOrCol& b)
         {
-            ptr_ += iter_stride_;
-            return *this;
+            assert(a.stride_ == b.stride_);
+            return (a.ptr_ - b.ptr_) / a.stride_;
         }
 
-        RowAndColIterator operator++(int)
-        {
-            RowAndColIterator tmp = *this;
-            ptr_ += iter_stride_;
-            return tmp;
-        }
+        reference operator[](const size_type pos) { return *(begin() + pos); }
+        const_reference operator[](const size_type pos) const { return *(begin() + pos); }
 
-        RowAndColIterator& operator--()
-        {
-            ptr_ -= iter_stride_;
-            return *this;
-        }
+        auto operator<=>(const RowOrCol& rhs) const { return ptr_ <=> rhs.ptr_; }
+        bool operator==(const RowOrCol& rhs) const { return ptr_ == rhs.ptr_; }
 
-        RowAndColIterator operator--(int)
-        {
-            RowAndColIterator tmp = *this;
-            ptr_ -= iter_stride_;
-            return tmp;
-        }
-
-        RowAndColIterator& operator+=(const difference_type n)
-        {
-            ptr_ += n * iter_stride_;
-            return *this;
-        }
-
-        RowAndColIterator& operator-=(const difference_type n)
-        {
-            ptr_ -= n * iter_stride_;
-            return *this;
-        }
-
-        RowAndColIterator operator*() const { return *this; }
-        reference operator[](const difference_type n) { return *(begin() + n); }
-
-        friend RowAndColIterator operator+(const difference_type n, const RowAndColIterator& a) { return RowAndColIterator{a.ptr_ + n * a.iter_stride_, a.iter_stride_, a.value_iter_stride_, a.value_iter_end_dist_}; }
-        friend RowAndColIterator operator+(const RowAndColIterator& a, const difference_type n) { return RowAndColIterator{a.ptr_ + n * a.iter_stride_, a.iter_stride_, a.value_iter_stride_, a.value_iter_end_dist_}; }
-        friend RowAndColIterator operator-(const RowAndColIterator& a, const difference_type n) { return RowAndColIterator{a.ptr_ - n * a.iter_stride_, a.iter_stride_, a.value_iter_stride_, a.value_iter_end_dist_}; }
-
-        friend bool operator==(const RowAndColIterator& a, const RowAndColIterator& b) { return a.ptr_ == b.ptr_; };
-        friend bool operator!=(const RowAndColIterator& a, const RowAndColIterator& b) { return a.ptr_ != b.ptr_; };
-
-        ValueIterator begin() { return ValueIterator{ptr_, value_iter_stride_}; }
-        ValueIterator end() { return ValueIterator{ptr_ + value_iter_end_dist_, value_iter_stride_}; }
+        void advance(const difference_type off) { ptr_ += stride_ * off; }
+        RowOrCol next(const difference_type off = 1) const { return RowOrCol{ptr_ + stride_ * off, size_, stride_, value_iter_stride_}; }
 
     private:
         pointer ptr_;
-        difference_type iter_stride_;
+        size_type size_;
+        difference_type stride_;
         difference_type value_iter_stride_;
-        difference_type value_iter_end_dist_;
     };
 
-    class Rows {
+    template <typename grid_value_type_pointer, typename grid_value_type_reference, std::ptrdiff_t direction>
+    class RowOrColIterator {
     public:
-        using value_type = T;
-        using difference_type = std::ptrdiff_t;
-        using pointer = value_type*;
+        using row_or_col_type = RowOrCol<grid_value_type_pointer, grid_value_type_reference>;
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = row_or_col_type;
+        using pointer = row_or_col_type*;
+        using reference = row_or_col_type&;
+        using const_reference = const row_or_col_type&;
+        using const_pointer = const row_or_col_type*;
+        using difference_type = Grid::difference_type;
+        using size_type = Grid::size_type;
 
-        Rows(pointer begin, pointer end, const difference_type row_width) : begin_{begin}, end_{end}, row_width_{row_width} { }
+        static_assert(direction == direction_forward || direction == direction_reverse);
 
-        RowAndColIterator begin() { return RowAndColIterator{begin_, row_width_, 1, row_width_}; }
-        RowAndColIterator end() { return RowAndColIterator{end_, row_width_, 1, row_width_}; }
+        RowOrColIterator(const row_or_col_type& row_or_col) : row_or_col_{row_or_col} { }
+        RowOrColIterator(grid_value_type_pointer ptr, const size_type row_or_col_size, const difference_type row_or_col_stride, const difference_type value_iter_stride)
+        {
+            assert(ptr != nullptr);
+            assert(row_or_col_size > 0);
+            assert(row_or_col_stride > 0);
+            assert(value_iter_stride > 0);
+            row_or_col_ = row_or_col_type{ptr, row_or_col_size, row_or_col_stride, value_iter_stride};
+        }
+
+        reference operator*() { return row_or_col_; }
+        const_reference operator*() const { return row_or_col_; }
+        pointer operator->() { return &row_or_col_; }
+
+        RowOrColIterator& operator++()
+        {
+            row_or_col_.advance(direction);
+            return *this;
+        }
+
+        RowOrColIterator operator++(int)
+        {
+            const RowOrColIterator tmp{*this};
+            ++(*this);
+            return tmp;
+        }
+
+        RowOrColIterator& operator--()
+        {
+            row_or_col_.advance(-direction);
+            return *this;
+        }
+
+        RowOrColIterator operator--(int)
+        {
+            const RowOrColIterator tmp{*this};
+            --(*this);
+            return tmp;
+        }
+
+        RowOrColIterator& operator+=(const difference_type off)
+        {
+            row_or_col_.advance(off * direction);
+            return *this;
+        }
+
+        RowOrColIterator& operator-=(const difference_type off)
+        {
+            row_or_col_.advance(-off * direction);
+            return *this;
+        }
+
+        RowOrColIterator operator+(const difference_type off) const { return RowOrColIterator{row_or_col_.next(off * direction)}; }
+        RowOrColIterator operator-(const difference_type off) const { return RowOrColIterator{row_or_col_.next(-off * direction)}; }
+        friend RowOrColIterator operator+(const difference_type off, const RowOrColIterator& a) { return RowOrColIterator{a.row_or_col_.next(off * direction)}; }
+        friend difference_type operator-(const RowOrColIterator& a, const RowOrColIterator& b)
+        {
+            if constexpr (direction == direction_forward)
+                return a.row_or_col_ - b.row_or_col_;
+            else
+                return b.row_or_col_ - a.row_or_col_;
+        }
+
+        row_or_col_type operator[](const difference_type off) const { return row_or_col_.next(off * direction); }
+
+        bool operator==(const RowOrColIterator&) const = default;
+        auto operator<=>(const RowOrColIterator& rhs) const
+        {
+            if constexpr (direction == direction_forward)
+                return row_or_col_ <=> rhs.row_or_col_;
+            else
+                return rhs.row_or_col_ <=> row_or_col_;
+        }
 
     private:
-        pointer begin_;
-        pointer end_;
-        difference_type row_width_;
+        row_or_col_type row_or_col_;
     };
 
-    class Cols {
+    template <typename pointer, typename reference>
+    class GridRowsOrCols {
     public:
-        using value_type = T;
-        using difference_type = std::ptrdiff_t;
-        using pointer = value_type*;
+        using const_pointer = const T*;
+        using const_reference = const T&;
+        using difference_type = Grid::difference_type;
+        using size_type = Grid::size_type;
+        using iterator = RowOrColIterator<pointer, reference, direction_forward>;
+        using const_iterator = RowOrColIterator<const_pointer, const_reference, direction_forward>;
+        using reverse_iterator = RowOrColIterator<pointer, reference, direction_reverse>;
+        using const_reverse_iterator = RowOrColIterator<const_pointer, const_reference, direction_reverse>;
 
-        Cols(pointer begin, pointer end, const difference_type row_width, const difference_type col_height) : begin_{begin}, end_{end}, row_width_{row_width}, col_height_{col_height} { }
+        GridRowsOrCols(pointer ptr, const size_type size, const size_type row_or_col_size, const difference_type row_or_col_stride, const difference_type value_iter_stride)
+        {
+            assert(ptr != nullptr);
+            assert(size > 0);
+            assert(row_or_col_size > 0);
+            assert(row_or_col_stride > 0);
+            assert(value_iter_stride > 0);
+            ptr_ = ptr;
+            size_ = size;
+            row_or_col_size_ = row_or_col_size;
+            row_or_col_stride_ = row_or_col_stride;
+            value_iter_stride_ = value_iter_stride;
+        }
 
-        RowAndColIterator begin() { return RowAndColIterator{begin_, 1, row_width_, row_width_ * col_height_}; }
-        RowAndColIterator end() { return RowAndColIterator{end_, 1, row_width_, row_width_ * col_height_}; }
+        size_type size() const { return size_; }
+
+        iterator begin() { return iterator{ptr_, row_or_col_size_, row_or_col_stride_, value_iter_stride_}; }
+        const_iterator begin() const { return const_iterator{ptr_, row_or_col_size_, row_or_col_stride_, value_iter_stride_}; }
+        const_iterator cbegin() const { return begin(); }
+
+        iterator end() { return iterator{ptr_ + size_ * row_or_col_stride_, row_or_col_size_, row_or_col_stride_, value_iter_stride_}; }
+        const_iterator end() const { return const_iterator{ptr_ + size_ * row_or_col_stride_, row_or_col_size_, row_or_col_stride_, value_iter_stride_}; }
+        const_iterator cend() const { return end(); }
+
+        reverse_iterator rbegin() { return reverse_iterator{ptr_ + (size_ - 1) * row_or_col_stride_, row_or_col_size_, row_or_col_stride_, value_iter_stride_}; }
+        const_reverse_iterator rbegin() const { return const_reverse_iterator{ptr_ + (size_ - 1) * row_or_col_stride_, row_or_col_size_, row_or_col_stride_, value_iter_stride_}; }
+        const_reverse_iterator crbegin() const { return rbegin(); }
+
+        reverse_iterator rend() { return reverse_iterator{ptr_ - row_or_col_stride_, row_or_col_size_, row_or_col_stride_, value_iter_stride_}; }
+        const_reverse_iterator rend() const { return const_reverse_iterator{ptr_ - row_or_col_stride_, row_or_col_size_, row_or_col_stride_, value_iter_stride_}; }
+        const_reverse_iterator crend() const { return rend(); }
+
+        auto front() { return *begin(); }
+        auto front() const { return *begin(); }
+
+        auto back() { return *(end() - 1); }
+        auto back() const { return *(end() - 1); }
+
+        auto operator[](const size_type pos) { return *(begin() + pos); }
 
     private:
-        pointer begin_;
-        pointer end_;
-        difference_type row_width_;
-        difference_type col_height_;
+        pointer ptr_;
+        size_type size_;
+        size_type row_or_col_size_;
+        difference_type row_or_col_stride_;
+        difference_type value_iter_stride_;
     };
 
+public:
     using value_type = T;
+    using pointer = T*;
+    using reference = T&;
+    using const_pointer = const T*;
+    using const_reference = const T&;
+    using grid_rows_type = GridRowsOrCols<pointer, reference>;
+    using grid_cols_type = GridRowsOrCols<pointer, reference>;
+    using const_grid_rows_type = GridRowsOrCols<const_pointer, const_reference>;
+    using const_grid_cols_type = GridRowsOrCols<const_pointer, const_reference>;
+    using grid_cell_type = GridCell<Grid<T>*>;
+    using const_grid_cell_type = GridCell<const Grid<T>*>;
 
-    Grid(int cols, int rows);
-    Grid(int cols, int rows, const T& value);
+    Grid(size_type rows, size_type cols);
+    Grid(size_type rows, size_type cols, const T& at);
 
-    [[nodiscard]] int width() const { return cols_; }
-    [[nodiscard]] int height() const { return rows_; }
+    size_type width() const { return cols_; }
+    size_type height() const { return rows_; }
 
-    [[nodiscard]] T* data() { return data_.data(); }
-    [[nodiscard]] std::size_t size() const { return data_.size(); }
+    size_type size() const { return static_cast<size_type>(data_.size()); }
 
-    [[nodiscard]] T& value(int col, int row);
-    [[nodiscard]] const T& value(int col, int row) const;
+    pointer data() { return data_.data(); }
+    const_pointer data() const { return data_.data(); }
 
-    [[nodiscard]] T& value(const Coords& coords);
-    [[nodiscard]] const T& value(const Coords& coords) const;
+    [[nodiscard]] inline reference at(size_type row, size_type col);
+    [[nodiscard]] inline const_reference at(size_type row, size_type col) const;
 
-    [[nodiscard]] GridCell<T> cell(int col, int row);
-    [[nodiscard]] GridCell<T> cell(const Coords& coords);
+    [[nodiscard]] reference at(const Coords& coords) { return at(coords.y, coords.x); }
+    [[nodiscard]] const_reference at(const Coords& coords) const { return at(coords.y, coords.x); }
 
-    [[nodiscard]] auto begin() noexcept { return data_.begin(); };
-    [[nodiscard]] auto end() noexcept { return data_.end(); };
-    [[nodiscard]] auto cbegin() const noexcept { return data_.cbegin(); };
-    [[nodiscard]] auto cend() const noexcept { return data_.cend(); };
-    [[nodiscard]] auto rbegin() noexcept { return data_.rbegin(); };
-    [[nodiscard]] auto rend() noexcept { return data_.rend(); };
-    [[nodiscard]] auto crbegin() const noexcept { return data_.crbegin(); };
-    [[nodiscard]] auto crend() const noexcept { return data_.crend(); };
+    [[nodiscard]] grid_cell_type cell(const Coords& coords) { return grid_cell_type{this, coords}; }
+    [[nodiscard]] grid_cell_type cell(size_type row, size_type col) { return cell(Coords{static_cast<int>(col), static_cast<int>(row)}); }
 
-    [[nodiscard]] auto rows() { return Rows(data(), data() + size(), width()); }
-    [[nodiscard]] auto cols() { return Cols(data(), data() + width(), width(), height()); }
+    [[nodiscard]] const_grid_cell_type cell(const Coords& coords) const { return const_grid_cell_type{this, coords}; }
+    [[nodiscard]] const_grid_cell_type cell(size_type row, size_type col) const { return cell(Coords{static_cast<int>(col), static_cast<int>(row)}); }
 
-    [[nodiscard]] auto row(const int n) { return rows().begin() + n; }
-    [[nodiscard]] auto col(const int n) { return cols().begin() + n; }
+    auto begin() { return data_.begin(); }
+    auto begin() const { return data_.cbegin(); }
+    auto cbegin() const { return data_.cbegin(); }
+
+    auto end() { return data_.end(); }
+    auto end() const { return data_.cend(); }
+    auto cend() const { return data_.cend(); }
+
+    auto rbegin() { return data_.rbegin(); }
+    auto rbegin() const { return data_.crbegin(); }
+    auto crbegin() const { return data_.crbegin(); }
+
+    auto rend() { return data_.rend(); }
+    auto rend() const { return data_.crend(); }
+    auto crend() const { return data_.crend(); }
+
+    [[nodiscard]] auto rows() { return grid_rows_type(data(), height(), width(), width(), 1); }
+    [[nodiscard]] auto rows() const { return const_grid_rows_type(data(), height(), width(), width(), 1); }
+    [[nodiscard]] auto cols() { return grid_cols_type(data(), width(), height(), 1, width()); }
+    [[nodiscard]] auto cols() const { return const_grid_cols_type(data(), width(), height(), 1, width()); }
+
+    [[nodiscard]] auto row(const size_type pos) { return *(rows().begin() + pos); }
+    [[nodiscard]] auto row(const size_type pos) const { return *(rows().begin() + pos); }
+    [[nodiscard]] auto col(const size_type pos) { return *(cols().begin() + pos); }
+    [[nodiscard]] auto col(const size_type pos) const { return *(cols().begin() + pos); }
+
+    auto operator[](const size_type pos) { return row(pos); }
+    auto operator[](const size_type pos) const { return row(pos); }
 
 private:
+    size_type rows_;
+    size_type cols_;
+
     std::vector<T> data_;
 
-    int cols_;
-    int rows_;
-
-    [[nodiscard]] std::size_t idx(int col, int row) const;
-    [[nodiscard]] std::size_t idx(const Coords& coords) const;
+    [[nodiscard]] inline size_type idx(size_type row, size_type col) const;
+    [[nodiscard]] size_type idx(const Coords& coords) const { return idx(coords.y, coords.x); }
 };
 
 template <typename T>
-Grid<T>::Grid(const int cols, const int rows) : data_(static_cast<std::size_t>(rows * cols)), cols_{cols}, rows_{rows} { }
-
-template <typename T>
-Grid<T>::Grid(const int cols, const int rows, const T& value) : data_(static_cast<std::size_t>(rows * cols), value), cols_{cols}, rows_{rows} { }
-
-template <typename T>
-T& Grid<T>::value(const int col, const int row)
+Grid<T>::Grid(const size_type rows, const size_type cols)
 {
-    assert(col >= 0 && row >= 0);
-    assert(idx(col, row) < size());
-
-    return data_[idx(col, row)];
+    assert(rows > 0 && cols > 0);
+    rows_ = rows;
+    cols_ = cols;
+    data_ = std::vector<T>(static_cast<std::size_t>(rows * cols));
 }
 
 template <typename T>
-const T& Grid<T>::value(const int col, const int row) const
+Grid<T>::Grid(const size_type rows, const size_type cols, const T& at)
 {
-    assert(col >= 0 && row >= 0);
-    assert(idx(col, row) < size());
-
-    return data_[idx(col, row)];
+    assert(rows > 0 && cols > 0);
+    rows_ = rows;
+    cols_ = cols;
+    data_ = std::vector<T>(static_cast<std::size_t>(rows * cols), at);
 }
 
 template <typename T>
-T& Grid<T>::value(const Coords& coords)
+typename Grid<T>::reference Grid<T>::at(const size_type row, const size_type col)
 {
-    assert(coords.x >= 0 && coords.y >= 0);
-    assert(idx(coords) < size());
-
-    return data_[idx(coords)];
+    assert(idx(row, col) < size());
+    return data_[static_cast<std::size_t>(idx(row, col))];
 }
 
 template <typename T>
-const T& Grid<T>::value(const Coords& coords) const
+typename Grid<T>::const_reference Grid<T>::at(const size_type row, const size_type col) const
 {
-    assert(coords.x >= 0 && coords.y >= 0);
-    assert(idx(coords) < size());
-
-    return data_[idx(coords)];
+    assert(idx(row, col) < size());
+    return data_[static_cast<std::size_t>(idx(row, col))];
 }
 
 template <typename T>
-GridCell<T> Grid<T>::cell(const int col, const int row)
+typename Grid<T>::size_type Grid<T>::idx(const size_type row, const size_type col) const
 {
-    return GridCell<T>{this, Coords{col, row}};
+    assert(row >= 0 && row < rows_);
+    assert(col >= 0 && col < cols_);
+    return row * cols_ + col;
 }
-
-template <typename T>
-GridCell<T> Grid<T>::cell(const Coords& coords)
-{
-    return GridCell<T>{this, coords};
-}
-
-template <typename T>
-std::size_t Grid<T>::idx(const int col, const int row) const
-{
-    assert(row >= 0 && col >= 0);
-
-    return static_cast<std::size_t>(row * cols_) + static_cast<std::size_t>(col);
-}
-
-template <typename T>
-std::size_t Grid<T>::idx(const Coords& coords) const
-{
-    assert(coords.x >= 0 && coords.y >= 0);
-
-    return static_cast<std::size_t>(coords.y * cols_) + static_cast<std::size_t>(coords.x);
-}
-
-using ByteGrid = Grid<uint8_t>;

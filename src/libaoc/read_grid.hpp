@@ -2,6 +2,6 @@
 
 #include <istream>
 
-#include "grid.hpp"
+#include "bytegrid.hpp"
 
 ByteGrid read_digit_grid(std::istream& input);

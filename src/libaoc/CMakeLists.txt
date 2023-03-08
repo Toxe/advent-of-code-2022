@@ -1,5 +1,5 @@
 add_library(libaoc
-        coords.cpp
+        bytegrid.hpp
         coords.hpp
         grid.hpp
         gridcell.hpp

@@ -1,24 +1,23 @@
 #pragma once
 
+#include <cassert>
+
 #include "coords.hpp"
 
-template <typename T>
-class Grid;
-
-template <typename T>
+template <typename GridPointer>
 class GridCell : public Coords {
 public:
-    using value_type = T;
-
-    GridCell(Grid<T>* grid, const Coords& coords) : Coords(coords), grid_{grid} { }
+    GridCell(GridPointer grid, const Coords& coords) : Coords(coords)
+    {
+        assert(grid != nullptr);
+        grid_ = grid;
+    }
 
     [[nodiscard]] int col() const { return x; }
     [[nodiscard]] int row() const { return y; }
-    [[nodiscard]] Coords coords() const { return {x, y}; }
 
-    [[nodiscard]] T& value() { return grid_->value(x, y); }
-    [[nodiscard]] const T& value() const { return grid_->value(x, y); }
+    [[nodiscard]] auto& value() { return grid_->at(*this); }
 
 private:
-    Grid<T>* grid_;
+    GridPointer grid_;
 };

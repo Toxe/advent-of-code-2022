@@ -19,7 +19,7 @@ TEST_CASE("day 08")
             "33549\n"
             "35390\n"};
 
-        Grid grid = read_digit_grid(input);
+        const Grid grid = read_digit_grid(input);
 
         SECTION("part 1")
         {
@@ -36,7 +36,7 @@ TEST_CASE("day 08")
     {
         auto input_stream = open_input_file(find_input_file("day08"));
         REQUIRE(input_stream.has_value());
-        Grid grid = read_digit_grid(*input_stream);
+        const Grid grid = read_digit_grid(*input_stream);
 
         SECTION("part 1")
         {

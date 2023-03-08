@@ -12,30 +12,13 @@ TEST_CASE("libaoc: Coords")
         CHECK(Coords{2, 3}.y == 3);
     }
 
-    SECTION("comparison")
-    {
-        CHECK(Coords{2, 3} == Coords{2, 3});
-        CHECK(Coords{2, 3} != Coords{3, 2});
-        CHECK(Coords{2, 2} < Coords{3, 3});
-        CHECK(Coords{2, 3} < Coords{3, 3});
-        CHECK(Coords{3, 2} < Coords{3, 3});
-        CHECK(Coords{3, 3} > Coords{2, 2});
-        CHECK(Coords{3, 3} > Coords{2, 3});
-        CHECK(Coords{3, 3} > Coords{3, 2});
-    }
-
-    SECTION("arithmetic")
-    {
-        CHECK(Coords{4, 5} + Coords{2, 1} == Coords{6, 6});
-        CHECK(Coords{4, 5} - Coords{1, 2} == Coords{3, 3});
-    }
-
     SECTION("assignment")
     {
         const Coords a{4, 5};
-        Coords b = a;
-        Coords c;
 
+        Coords b = a;
+
+        Coords c;
         c = a;
 
         CHECK(b == a);
@@ -46,6 +29,53 @@ TEST_CASE("libaoc: Coords")
 
         CHECK(b == Coords{6, 6});
         CHECK(c == Coords{3, 3});
+    }
+
+    SECTION("arithmetic")
+    {
+        CHECK(Coords{4, 5} + Coords{2, 1} == Coords{6, 6});
+        CHECK(Coords{4, 5} - Coords{1, 2} == Coords{3, 3});
+    }
+
+    SECTION("comparison")
+    {
+        CHECK(Coords{2, 3} == Coords{2, 3});
+        CHECK((Coords{2, 3} == Coords{3, 2}) == false);
+
+        CHECK(Coords{2, 3} != Coords{3, 2});
+        CHECK((Coords{2, 3} != Coords{2, 3}) == false);
+
+        CHECK(Coords{2, 2} < Coords{3, 3});
+        CHECK(Coords{2, 3} < Coords{3, 3});
+        CHECK(Coords{3, 2} < Coords{3, 3});
+        CHECK((Coords{2, 2} < Coords{2, 2}) == false);
+        CHECK((Coords{3, 3} < Coords{2, 2}) == false);
+        CHECK((Coords{3, 3} < Coords{2, 3}) == false);
+        CHECK((Coords{3, 3} < Coords{3, 2}) == false);
+
+        CHECK(Coords{3, 3} > Coords{2, 2});
+        CHECK(Coords{3, 3} > Coords{2, 3});
+        CHECK(Coords{3, 3} > Coords{3, 2});
+        CHECK((Coords{3, 3} > Coords{3, 3}) == false);
+        CHECK((Coords{2, 2} > Coords{3, 3}) == false);
+        CHECK((Coords{2, 3} > Coords{3, 3}) == false);
+        CHECK((Coords{3, 2} > Coords{3, 3}) == false);
+
+        CHECK(Coords{2, 2} <= Coords{2, 2});
+        CHECK(Coords{2, 2} <= Coords{3, 3});
+        CHECK(Coords{2, 3} <= Coords{3, 3});
+        CHECK(Coords{3, 2} <= Coords{3, 3});
+        CHECK((Coords{3, 3} <= Coords{2, 2}) == false);
+        CHECK((Coords{3, 3} <= Coords{2, 3}) == false);
+        CHECK((Coords{3, 3} <= Coords{3, 2}) == false);
+
+        CHECK(Coords{3, 3} >= Coords{3, 3});
+        CHECK(Coords{3, 3} >= Coords{2, 2});
+        CHECK(Coords{3, 3} >= Coords{2, 3});
+        CHECK(Coords{3, 3} >= Coords{3, 2});
+        CHECK((Coords{2, 2} >= Coords{3, 3}) == false);
+        CHECK((Coords{2, 3} >= Coords{3, 3}) == false);
+        CHECK((Coords{3, 2} >= Coords{3, 3}) == false);
     }
 
     SECTION("move()")
