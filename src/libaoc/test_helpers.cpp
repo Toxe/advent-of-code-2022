@@ -10,6 +10,7 @@ std::optional<std::string> find_input_file(const std::string& day)
         "input.txt",
         "src/" + day + "/input.txt",
         "../../../src/" + day + "/input.txt",
+        "../../../../src/" + day + "/input.txt",
         "../../../../../src/" + day + "/input.txt",
     };
 
