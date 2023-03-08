@@ -8,41 +8,44 @@
 
 #include "../src/day08/day08.hpp"
 
-TEST_CASE("day 08: works with example input")
+TEST_CASE("day 08")
 {
-    std::istringstream input{
-        "30373\n"
-        "25512\n"
-        "65332\n"
-        "33549\n"
-        "35390\n"};
-
-    Grid grid = read_digit_grid(input);
-
-    SECTION("part 1")
+    SECTION("works with example input")
     {
-        CHECK(day08_part1(grid) == 21);
+        std::istringstream input{
+            "30373\n"
+            "25512\n"
+            "65332\n"
+            "33549\n"
+            "35390\n"};
+
+        Grid grid = read_digit_grid(input);
+
+        SECTION("part 1")
+        {
+            CHECK(day08_part1(grid) == 21);
+        }
+
+        SECTION("part 2")
+        {
+            CHECK(day08_part2(grid) == 8);
+        }
     }
 
-    SECTION("part 2")
+    SECTION("works with puzzle input")
     {
-        CHECK(day08_part2(grid) == 8);
-    }
-}
+        auto input_stream = open_input_file(find_input_file("day08"));
+        REQUIRE(input_stream.has_value());
+        Grid grid = read_digit_grid(*input_stream);
 
-TEST_CASE("day 08: works with puzzle input")
-{
-    auto input_stream = open_input_file(find_input_file("day08"));
-    REQUIRE(input_stream.has_value());
-    Grid grid = read_digit_grid(*input_stream);
+        SECTION("part 1")
+        {
+            CHECK(day08_part1(grid) == 1533);
+        }
 
-    SECTION("part 1")
-    {
-        CHECK(day08_part1(grid) == 1533);
-    }
-
-    SECTION("part 2")
-    {
-        CHECK(day08_part2(grid) == 345744);
+        SECTION("part 2")
+        {
+            CHECK(day08_part2(grid) == 345744);
+        }
     }
 }

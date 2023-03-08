@@ -6,40 +6,43 @@
 
 #include "../src/day01/day01.hpp"
 
-TEST_CASE("day 01: works with example input")
+TEST_CASE("day 01")
 {
-    const GroupedNumbers grouped_numbers = {
-        {1000, 2000, 3000},
-        {4000},
-        {5000, 6000},
-        {7000, 8000, 9000},
-        {10000},
-    };
-
-    SECTION("part 1")
+    SECTION("works with example input")
     {
-        CHECK(day01_part1(grouped_numbers) == 24000);
+        const GroupedNumbers grouped_numbers = {
+            {1000, 2000, 3000},
+            {4000},
+            {5000, 6000},
+            {7000, 8000, 9000},
+            {10000},
+        };
+
+        SECTION("part 1")
+        {
+            CHECK(day01_part1(grouped_numbers) == 24000);
+        }
+
+        SECTION("part 2")
+        {
+            CHECK(day01_part2(grouped_numbers) == 45000);
+        }
     }
 
-    SECTION("part 2")
+    SECTION("works with puzzle input")
     {
-        CHECK(day01_part2(grouped_numbers) == 45000);
-    }
-}
+        auto input_stream = open_input_file(find_input_file("day01"));
+        REQUIRE(input_stream.has_value());
+        const GroupedNumbers grouped_numbers = read_grouped_numbers(*input_stream);
 
-TEST_CASE("day 01: works with puzzle input")
-{
-    auto input_stream = open_input_file(find_input_file("day01"));
-    REQUIRE(input_stream.has_value());
-    const GroupedNumbers grouped_numbers = read_grouped_numbers(*input_stream);
+        SECTION("part 1")
+        {
+            CHECK(day01_part1(grouped_numbers) == 68775);
+        }
 
-    SECTION("part 1")
-    {
-        CHECK(day01_part1(grouped_numbers) == 68775);
-    }
-
-    SECTION("part 2")
-    {
-        CHECK(day01_part2(grouped_numbers) == 202585);
+        SECTION("part 2")
+        {
+            CHECK(day01_part2(grouped_numbers) == 202585);
+        }
     }
 }
