@@ -31,7 +31,7 @@ std::string generate_temp_file_name()
     std::string name;
 
     while (true) {
-        auto tmp = temp_dir_path / ("aoc2022_tmp_" + std::to_string(dist(gen)));
+        auto tmp = temp_dir_path / ("aoc_tmp_" + std::to_string(dist(gen)));
 
         if (!std::filesystem::exists(tmp)) {
             name = tmp.string();
