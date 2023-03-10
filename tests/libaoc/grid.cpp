@@ -8,9 +8,9 @@
 
 #include "grid.hpp"
 
-Grid<int> create_grid_with_test_values(const int rows, const int cols)
+Grid<int> create_grid_with_test_values(const int cols, const int rows)
 {
-    Grid<int> grid{rows, cols};
+    Grid<int> grid{cols, rows};
 
     for (int row = 0; row < rows; ++row)
         for (int col = 0; col < cols; ++col)
@@ -257,11 +257,11 @@ void check_iterator_operations(Iterator begin, Iterator end, Values values, GetV
     }
 }
 
-// GridRows or GridCols
-template <typename GridRows_or_GridCols, typename Values>
-void gridrows_or_gridcols_check_basic_functionality(GridRows_or_GridCols rows_or_cols, Values values)
+// GridRowsOrCols
+template <typename GridRowsOrCols, typename Values>
+void grid_rows_or_cols_check_basic_functionality(GridRowsOrCols rows_or_cols, Values values)
 {
-    const auto num_values = static_cast<typename GridRows_or_GridCols::size_type>(values.size());
+    const auto num_values = static_cast<typename GridRowsOrCols::size_type>(values.size());
 
     SECTION("size() returns the number of Grid rows/cols")
     {
@@ -279,8 +279,8 @@ void gridrows_or_gridcols_check_basic_functionality(GridRows_or_GridCols rows_or
     }
 }
 
-template <typename Const_GridRows_or_GridCols, typename NonConst_GridRows_or_GridCols, typename Values>
-void gridrows_or_gridcols_check_iterators(Const_GridRows_or_GridCols const_rows_or_cols, NonConst_GridRows_or_GridCols non_const_rows_or_cols, Values values)
+template <typename Const_GridRowsOrCols, typename NonConst_GridRowsOrCols, typename Values>
+void grid_rows_or_cols_check_iterators(Const_GridRowsOrCols const_rows_or_cols, NonConst_GridRowsOrCols non_const_rows_or_cols, Values values)
 {
     SECTION("const")
     {
@@ -349,8 +349,8 @@ void gridrows_or_gridcols_check_iterators(Const_GridRows_or_GridCols const_rows_
     }
 }
 
-template <typename Const_GridRows_or_GridCols, typename NonConst_GridRows_or_GridCols, typename Values>
-void gridrows_or_gridcols_check_operators(Const_GridRows_or_GridCols const_rows_or_cols, NonConst_GridRows_or_GridCols non_const_rows_or_cols, Values values)
+template <typename Const_GridRowsOrCols, typename NonConst_GridRowsOrCols, typename Values>
+void grid_rows_or_cols_check_operators(Const_GridRowsOrCols const_rows_or_cols, NonConst_GridRowsOrCols non_const_rows_or_cols, Values values)
 {
     SECTION("operator[]")
     {
@@ -378,7 +378,7 @@ void gridrows_or_gridcols_check_operators(Const_GridRows_or_GridCols const_rows_
     }
 }
 
-// Row or Col
+// RowOrCol
 template <typename RowOrCol, typename Values>
 void row_or_col_check_basic_functionality(RowOrCol row_or_col, Values values, Values other_row_or_col_values)
 {
@@ -532,9 +532,9 @@ void row_or_col_check_other_operators(ConstRowOrCol const_row_or_col, NonConstRo
     }
 }
 
-// RowIterator
-template <typename RowIterator, typename Values>
-void row_iterator_check_other_operators(RowIterator begin, RowIterator end, Values values)
+// RowOrColIterator
+template <typename RowOrColIterator, typename Values>
+void row_or_col_iterator_check_other_operators(RowOrColIterator begin, RowOrColIterator end, Values values)
 {
     SECTION("operator*")
     {
@@ -603,8 +603,8 @@ void row_iterator_check_other_operators(RowIterator begin, RowIterator end, Valu
     }
 }
 
-template <typename RowIterator, typename Values>
-void row_iterator_check_modifying_values(RowIterator it, Values values)
+template <typename RowOrColIterator, typename Values>
+void row_or_col_iterator_check_modifying_values(RowOrColIterator it, Values values)
 {
     REQUIRE(it[1].front() == values[1]);
     REQUIRE(it[2].front() == values[2]);
@@ -712,21 +712,21 @@ TEST_CASE("libaoc: Grid")
     {
         SECTION("can create new Grid with default initialized elements")
         {
-            const Grid<int> grid{3, 4};
+            const Grid<int> grid{4, 3};
 
             CHECK(std::all_of(grid.begin(), grid.end(), [](int i) { return i == 0; }));
         }
 
         SECTION("can create new Grid with default values")
         {
-            const Grid<int> grid{3, 4, -1};
+            const Grid<int> grid{4, 3, -1};
 
             CHECK(std::all_of(grid.begin(), grid.end(), [](int i) { return i == -1; }));
         }
 
         SECTION("width() and height() return the correct values")
         {
-            const Grid<int> grid{3, 4};
+            const Grid<int> grid{4, 3};
 
             CHECK(grid.width() == 4);
             CHECK(grid.height() == 3);
@@ -749,7 +749,7 @@ TEST_CASE("libaoc: Grid")
         {
             SECTION("const")
             {
-                const Grid<int> grid = create_grid_with_test_values(3, 4);
+                const Grid<int> grid = create_grid_with_test_values(4, 3);
                 auto pi = grid.data();
 
                 REQUIRE(grid.data() != nullptr);
@@ -759,7 +759,7 @@ TEST_CASE("libaoc: Grid")
 
             SECTION("non-const")
             {
-                Grid<int> grid = create_grid_with_test_values(3, 4);
+                Grid<int> grid = create_grid_with_test_values(4, 3);
                 auto pi = grid.data();
 
                 REQUIRE(grid.data() != nullptr);
@@ -777,12 +777,12 @@ TEST_CASE("libaoc: Grid")
         {
             SECTION("const")
             {
-                const Grid<int> grid = create_grid_with_test_values(3, 4);
+                const Grid<int> grid = create_grid_with_test_values(4, 3);
 
                 CHECK(grid.at(0, 0) == 11);
-                CHECK(grid.at(0, 1) == 12);
-                CHECK(grid.at(1, 0) == 21);
-                CHECK(grid.at(2, 3) == 34);
+                CHECK(grid.at(1, 0) == 12);
+                CHECK(grid.at(0, 1) == 21);
+                CHECK(grid.at(3, 2) == 34);
 
                 CHECK(grid.at(Coords{0, 0}) == 11);
                 CHECK(grid.at(Coords{1, 0}) == 12);
@@ -792,17 +792,17 @@ TEST_CASE("libaoc: Grid")
 
             SECTION("non-const")
             {
-                Grid<int> grid = create_grid_with_test_values(3, 4);
+                Grid<int> grid = create_grid_with_test_values(4, 3);
 
                 grid.at(0, 0) = 111;
-                grid.at(0, 1) = 222;
-                grid.at(1, 0) = 333;
-                grid.at(2, 3) = 444;
+                grid.at(1, 0) = 222;
+                grid.at(0, 1) = 333;
+                grid.at(3, 2) = 444;
 
                 CHECK(grid.at(0, 0) == 111);
-                CHECK(grid.at(0, 1) == 222);
-                CHECK(grid.at(1, 0) == 333);
-                CHECK(grid.at(2, 3) == 444);
+                CHECK(grid.at(1, 0) == 222);
+                CHECK(grid.at(0, 1) == 333);
+                CHECK(grid.at(3, 2) == 444);
 
                 grid.at(Coords{0, 0}) = 1111;
                 grid.at(Coords{1, 0}) = 2222;
@@ -810,9 +810,9 @@ TEST_CASE("libaoc: Grid")
                 grid.at(Coords{3, 2}) = 4444;
 
                 CHECK(grid.at(0, 0) == 1111);
-                CHECK(grid.at(0, 1) == 2222);
-                CHECK(grid.at(1, 0) == 3333);
-                CHECK(grid.at(2, 3) == 4444);
+                CHECK(grid.at(1, 0) == 2222);
+                CHECK(grid.at(0, 1) == 3333);
+                CHECK(grid.at(3, 2) == 4444);
             }
         }
 
@@ -820,7 +820,7 @@ TEST_CASE("libaoc: Grid")
         {
             SECTION("const")
             {
-                const Grid<int> grid = create_grid_with_test_values(5, 4);
+                const Grid<int> grid = create_grid_with_test_values(4, 5);
                 auto row0 = grid.row(0);
                 auto row1 = grid.row(1);
                 auto row2 = grid.row(2);
@@ -832,7 +832,7 @@ TEST_CASE("libaoc: Grid")
 
             SECTION("non-const")
             {
-                Grid<int> grid = create_grid_with_test_values(5, 4);
+                Grid<int> grid = create_grid_with_test_values(4, 5);
                 auto row0 = grid.row(0);
                 auto row1 = grid.row(1);
                 auto row2 = grid.row(2);
@@ -846,8 +846,8 @@ TEST_CASE("libaoc: Grid")
                 row2[0] = 300;
 
                 CHECK(grid.at(0, 0) == 100);
-                CHECK(grid.at(1, 0) == 200);
-                CHECK(grid.at(2, 0) == 300);
+                CHECK(grid.at(0, 1) == 200);
+                CHECK(grid.at(0, 2) == 300);
             }
         }
 
@@ -855,7 +855,7 @@ TEST_CASE("libaoc: Grid")
         {
             SECTION("const")
             {
-                const Grid<int> grid = create_grid_with_test_values(5, 4);
+                const Grid<int> grid = create_grid_with_test_values(4, 5);
                 auto rows = grid.rows();
 
                 CHECK(rows[0][0] == 11);
@@ -865,7 +865,7 @@ TEST_CASE("libaoc: Grid")
 
             SECTION("non-const")
             {
-                Grid<int> grid = create_grid_with_test_values(5, 4);
+                Grid<int> grid = create_grid_with_test_values(4, 5);
                 auto rows = grid.rows();
 
                 CHECK(rows[0][0] == 11);
@@ -877,8 +877,8 @@ TEST_CASE("libaoc: Grid")
                 rows[2][0] = 300;
 
                 CHECK(grid.at(0, 0) == 100);
-                CHECK(grid.at(1, 0) == 200);
-                CHECK(grid.at(2, 0) == 300);
+                CHECK(grid.at(0, 1) == 200);
+                CHECK(grid.at(0, 2) == 300);
             }
         }
 
@@ -886,7 +886,7 @@ TEST_CASE("libaoc: Grid")
         {
             SECTION("const")
             {
-                const Grid<int> grid = create_grid_with_test_values(5, 4);
+                const Grid<int> grid = create_grid_with_test_values(4, 5);
                 auto col0 = grid.col(0);
                 auto col1 = grid.col(1);
                 auto col2 = grid.col(2);
@@ -898,7 +898,7 @@ TEST_CASE("libaoc: Grid")
 
             SECTION("non-const")
             {
-                Grid<int> grid = create_grid_with_test_values(5, 4);
+                Grid<int> grid = create_grid_with_test_values(4, 5);
                 auto col0 = grid.col(0);
                 auto col1 = grid.col(1);
                 auto col2 = grid.col(2);
@@ -912,8 +912,8 @@ TEST_CASE("libaoc: Grid")
                 col2[0] = 300;
 
                 CHECK(grid.at(0, 0) == 100);
-                CHECK(grid.at(0, 1) == 200);
-                CHECK(grid.at(0, 2) == 300);
+                CHECK(grid.at(1, 0) == 200);
+                CHECK(grid.at(2, 0) == 300);
             }
         }
 
@@ -921,7 +921,7 @@ TEST_CASE("libaoc: Grid")
         {
             SECTION("const")
             {
-                const Grid<int> grid = create_grid_with_test_values(5, 4);
+                const Grid<int> grid = create_grid_with_test_values(4, 5);
                 auto cols = grid.cols();
 
                 CHECK(cols[0][0] == 11);
@@ -931,7 +931,7 @@ TEST_CASE("libaoc: Grid")
 
             SECTION("non-const")
             {
-                Grid<int> grid = create_grid_with_test_values(5, 4);
+                Grid<int> grid = create_grid_with_test_values(4, 5);
                 auto cols = grid.cols();
 
                 REQUIRE(cols[0][0] == 11);
@@ -943,8 +943,8 @@ TEST_CASE("libaoc: Grid")
                 cols[2][0] = 300;
 
                 CHECK(grid.at(0, 0) == 100);
-                CHECK(grid.at(0, 1) == 200);
-                CHECK(grid.at(0, 2) == 300);
+                CHECK(grid.at(1, 0) == 200);
+                CHECK(grid.at(2, 0) == 300);
             }
         }
 
@@ -989,7 +989,7 @@ TEST_CASE("libaoc: Grid")
         {
             SECTION("const")
             {
-                const Grid<int> grid = create_grid_with_test_values(3, 4);
+                const Grid<int> grid = create_grid_with_test_values(4, 3);
 
                 SECTION("begin")
                 {
@@ -1002,8 +1002,8 @@ TEST_CASE("libaoc: Grid")
                     CHECK(it3 == it4);
                     CHECK(*it1 == grid.at(0, 0));
                     CHECK(*it2 == grid.at(0, 0));
-                    CHECK(*it3 == grid.at(2, 3));
-                    CHECK(*it4 == grid.at(2, 3));
+                    CHECK(*it3 == grid.at(3, 2));
+                    CHECK(*it4 == grid.at(3, 2));
                 }
 
                 SECTION("end")
@@ -1015,8 +1015,8 @@ TEST_CASE("libaoc: Grid")
 
                     CHECK(it1 == it2);
                     CHECK(it3 == it4);
-                    CHECK(*(it1 - 1) == grid.at(2, 3));
-                    CHECK(*(it2 - 1) == grid.at(2, 3));
+                    CHECK(*(it1 - 1) == grid.at(3, 2));
+                    CHECK(*(it2 - 1) == grid.at(3, 2));
                     CHECK(*(it3 - 1) == grid.at(0, 0));
                     CHECK(*(it4 - 1) == grid.at(0, 0));
                 }
@@ -1024,7 +1024,7 @@ TEST_CASE("libaoc: Grid")
 
             SECTION("non-const")
             {
-                Grid<int> grid = create_grid_with_test_values(3, 4);
+                Grid<int> grid = create_grid_with_test_values(4, 3);
 
                 SECTION("begin")
                 {
@@ -1032,13 +1032,13 @@ TEST_CASE("libaoc: Grid")
                     auto it2 = grid.rbegin();
 
                     CHECK(grid.at(0, 0) == 11);
-                    CHECK(grid.at(2, 3) == 34);
+                    CHECK(grid.at(3, 2) == 34);
 
                     *it1 = 100;
                     *it2 = 200;
 
                     CHECK(grid.at(0, 0) == 100);
-                    CHECK(grid.at(2, 3) == 200);
+                    CHECK(grid.at(3, 2) == 200);
                 }
 
                 SECTION("end")
@@ -1047,13 +1047,13 @@ TEST_CASE("libaoc: Grid")
                     auto it2 = grid.rend();
 
                     CHECK(grid.at(0, 0) == 11);
-                    CHECK(grid.at(2, 3) == 34);
+                    CHECK(grid.at(3, 2) == 34);
 
                     *(it1 - 1) = 100;
                     *(it2 - 1) = 200;
 
                     CHECK(grid.at(0, 0) == 200);
-                    CHECK(grid.at(2, 3) == 100);
+                    CHECK(grid.at(3, 2) == 100);
                 }
             }
         }
@@ -1064,7 +1064,7 @@ TEST_CASE("libaoc: Grid")
             {
                 SECTION("const")
                 {
-                    const Grid<int> grid = create_grid_with_test_values(5, 4);
+                    const Grid<int> grid = create_grid_with_test_values(4, 5);
                     auto row0 = grid[0];
                     auto second_row_third_value = grid[1][2];
 
@@ -1075,7 +1075,7 @@ TEST_CASE("libaoc: Grid")
 
                 SECTION("non-const")
                 {
-                    Grid<int> grid = create_grid_with_test_values(5, 4);
+                    Grid<int> grid = create_grid_with_test_values(4, 5);
                     auto row0 = grid[0];
                     auto& second_row_third_value = grid[1][2];
 
@@ -1088,8 +1088,8 @@ TEST_CASE("libaoc: Grid")
                     second_row_third_value = 300;
 
                     CHECK(grid.at(0, 0) == 100);
-                    CHECK(grid.at(0, 1) == 200);
-                    CHECK(grid.at(1, 2) == 300);
+                    CHECK(grid.at(1, 0) == 200);
+                    CHECK(grid.at(2, 1) == 300);
                 }
             }
         }
@@ -1097,64 +1097,64 @@ TEST_CASE("libaoc: Grid")
 
     SECTION("Grid::GridRows")
     {
-        const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+        const Grid<int> const_grid = create_grid_with_test_values(4, 5);
         auto const_rows = const_grid.rows();
 
-        Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+        Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
         auto non_const_rows = non_const_grid.rows();
 
         const std::vector first_value_of_each_row_test_values{11, 21, 31, 41, 51};
 
         SECTION("basic functionality")
         {
-            gridrows_or_gridcols_check_basic_functionality(const_rows, first_value_of_each_row_test_values);
-            gridrows_or_gridcols_check_basic_functionality(non_const_rows, first_value_of_each_row_test_values);
+            grid_rows_or_cols_check_basic_functionality(const_rows, first_value_of_each_row_test_values);
+            grid_rows_or_cols_check_basic_functionality(non_const_rows, first_value_of_each_row_test_values);
         }
 
         SECTION("iterators")
         {
-            gridrows_or_gridcols_check_iterators(const_rows, non_const_rows, first_value_of_each_row_test_values);
+            grid_rows_or_cols_check_iterators(const_rows, non_const_rows, first_value_of_each_row_test_values);
         }
 
         SECTION("operators")
         {
-            gridrows_or_gridcols_check_operators(const_rows, non_const_rows, first_value_of_each_row_test_values);
+            grid_rows_or_cols_check_operators(const_rows, non_const_rows, first_value_of_each_row_test_values);
         }
     }
 
     SECTION("Grid::GridCols")
     {
-        const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+        const Grid<int> const_grid = create_grid_with_test_values(4, 5);
         auto const_cols = const_grid.cols();
 
-        Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+        Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
         auto non_const_cols = non_const_grid.cols();
 
         const std::vector first_value_of_each_col_test_values{11, 12, 13, 14};
 
         SECTION("basic functionality")
         {
-            gridrows_or_gridcols_check_basic_functionality(const_cols, first_value_of_each_col_test_values);
-            gridrows_or_gridcols_check_basic_functionality(non_const_cols, first_value_of_each_col_test_values);
+            grid_rows_or_cols_check_basic_functionality(const_cols, first_value_of_each_col_test_values);
+            grid_rows_or_cols_check_basic_functionality(non_const_cols, first_value_of_each_col_test_values);
         }
 
         SECTION("iterators")
         {
-            gridrows_or_gridcols_check_iterators(const_cols, non_const_cols, first_value_of_each_col_test_values);
+            grid_rows_or_cols_check_iterators(const_cols, non_const_cols, first_value_of_each_col_test_values);
         }
 
         SECTION("operators")
         {
-            gridrows_or_gridcols_check_operators(const_cols, non_const_cols, first_value_of_each_col_test_values);
+            grid_rows_or_cols_check_operators(const_cols, non_const_cols, first_value_of_each_col_test_values);
         }
     }
 
     SECTION("Grid::Row")
     {
-        const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+        const Grid<int> const_grid = create_grid_with_test_values(4, 5);
         auto const_row = const_grid.row(0);
 
-        Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+        Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
         auto non_const_row = non_const_grid.row(0);
 
         const std::vector test_values{11, 12, 13, 14};
@@ -1187,10 +1187,10 @@ TEST_CASE("libaoc: Grid")
 
     SECTION("Grid::Col")
     {
-        const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+        const Grid<int> const_grid = create_grid_with_test_values(4, 5);
         auto const_col = const_grid.col(0);
 
-        Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+        Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
         auto non_const_col = non_const_grid.col(0);
 
         const std::vector test_values{11, 21, 31, 41, 51};
@@ -1227,7 +1227,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("iterate values")
         {
-            const Grid<int> grid = create_grid_with_test_values(5, 4);
+            const Grid<int> grid = create_grid_with_test_values(4, 5);
             auto rows = grid.rows();
 
             SECTION("traditional for loop")
@@ -1255,10 +1255,10 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("const and non-const tests")
         {
-            const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+            const Grid<int> const_grid = create_grid_with_test_values(4, 5);
             auto const_rows = const_grid.rows();
 
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
             auto non_const_rows = non_const_grid.rows();
 
             SECTION("distance between elements")
@@ -1297,17 +1297,17 @@ TEST_CASE("libaoc: Grid")
 
                 SECTION("other operators")
                 {
-                    row_iterator_check_other_operators(const_rows.begin(), const_rows.end(), test_values);
-                    row_iterator_check_other_operators(non_const_rows.begin(), non_const_rows.end(), test_values);
+                    row_or_col_iterator_check_other_operators(const_rows.begin(), const_rows.end(), test_values);
+                    row_or_col_iterator_check_other_operators(non_const_rows.begin(), non_const_rows.end(), test_values);
                 }
             }
         }
 
         SECTION("modifying values")
         {
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
 
-            row_iterator_check_modifying_values(non_const_grid.rows().begin(), test_values);
+            row_or_col_iterator_check_modifying_values(non_const_grid.rows().begin(), test_values);
         }
     }
 
@@ -1317,7 +1317,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("iterate values")
         {
-            const Grid<int> grid = create_grid_with_test_values(5, 4);
+            const Grid<int> grid = create_grid_with_test_values(4, 5);
             auto rows = grid.rows();
 
             SECTION("traditional for loop")
@@ -1334,10 +1334,10 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("const and non-const tests")
         {
-            const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+            const Grid<int> const_grid = create_grid_with_test_values(4, 5);
             auto const_rows = const_grid.rows();
 
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
             auto non_const_rows = non_const_grid.rows();
 
             SECTION("distance between elements")
@@ -1376,17 +1376,17 @@ TEST_CASE("libaoc: Grid")
 
                 SECTION("other operators")
                 {
-                    row_iterator_check_other_operators(const_rows.rbegin(), const_rows.rend(), test_values);
-                    row_iterator_check_other_operators(non_const_rows.rbegin(), non_const_rows.rend(), test_values);
+                    row_or_col_iterator_check_other_operators(const_rows.rbegin(), const_rows.rend(), test_values);
+                    row_or_col_iterator_check_other_operators(non_const_rows.rbegin(), non_const_rows.rend(), test_values);
                 }
             }
         }
 
         SECTION("modifying values")
         {
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
 
-            row_iterator_check_modifying_values(non_const_grid.rows().rbegin(), test_values);
+            row_or_col_iterator_check_modifying_values(non_const_grid.rows().rbegin(), test_values);
         }
     }
 
@@ -1396,7 +1396,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("iterate values")
         {
-            const Grid<int> grid = create_grid_with_test_values(5, 4);
+            const Grid<int> grid = create_grid_with_test_values(4, 5);
             auto cols = grid.cols();
 
             SECTION("traditional for loop")
@@ -1424,10 +1424,10 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("const and non-const tests")
         {
-            const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+            const Grid<int> const_grid = create_grid_with_test_values(4, 5);
             auto const_cols = const_grid.cols();
 
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
             auto non_const_cols = non_const_grid.cols();
 
             SECTION("distance between elements")
@@ -1466,17 +1466,17 @@ TEST_CASE("libaoc: Grid")
 
                 SECTION("other operators")
                 {
-                    row_iterator_check_other_operators(const_cols.begin(), const_cols.end(), test_values);
-                    row_iterator_check_other_operators(non_const_cols.begin(), non_const_cols.end(), test_values);
+                    row_or_col_iterator_check_other_operators(const_cols.begin(), const_cols.end(), test_values);
+                    row_or_col_iterator_check_other_operators(non_const_cols.begin(), non_const_cols.end(), test_values);
                 }
             }
         }
 
         SECTION("modifying values")
         {
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
 
-            row_iterator_check_modifying_values(non_const_grid.cols().begin(), test_values);
+            row_or_col_iterator_check_modifying_values(non_const_grid.cols().begin(), test_values);
         }
     }
 
@@ -1486,7 +1486,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("iterate values")
         {
-            const Grid<int> grid = create_grid_with_test_values(5, 4);
+            const Grid<int> grid = create_grid_with_test_values(4, 5);
             auto cols = grid.cols();
 
             SECTION("traditional for loop")
@@ -1514,10 +1514,10 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("const and non-const tests")
         {
-            const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+            const Grid<int> const_grid = create_grid_with_test_values(4, 5);
             auto const_cols = const_grid.cols();
 
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
             auto non_const_cols = non_const_grid.cols();
 
             SECTION("distance between elements")
@@ -1556,17 +1556,17 @@ TEST_CASE("libaoc: Grid")
 
                 SECTION("other operators")
                 {
-                    row_iterator_check_other_operators(const_cols.rbegin(), const_cols.rend(), test_values);
-                    row_iterator_check_other_operators(non_const_cols.rbegin(), non_const_cols.rend(), test_values);
+                    row_or_col_iterator_check_other_operators(const_cols.rbegin(), const_cols.rend(), test_values);
+                    row_or_col_iterator_check_other_operators(non_const_cols.rbegin(), non_const_cols.rend(), test_values);
                 }
             }
         }
 
         SECTION("modifying values")
         {
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
 
-            row_iterator_check_modifying_values(non_const_grid.cols().rbegin(), test_values);
+            row_or_col_iterator_check_modifying_values(non_const_grid.cols().rbegin(), test_values);
         }
     }
 
@@ -1576,7 +1576,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("iterate values")
         {
-            const Grid<int> grid = create_grid_with_test_values(5, 4);
+            const Grid<int> grid = create_grid_with_test_values(4, 5);
             auto row = grid.row(0);
 
             SECTION("traditional for loop")
@@ -1602,10 +1602,10 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("const and non-const tests")
         {
-            const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+            const Grid<int> const_grid = create_grid_with_test_values(4, 5);
             auto const_row = const_grid.row(0);
 
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
             auto non_const_row = non_const_grid.row(0);
 
             SECTION("distance between elements")
@@ -1642,8 +1642,8 @@ TEST_CASE("libaoc: Grid")
                         int x = 42;
                     };
 
-                    const Grid<S> const_struct_grid{3, 4};
-                    Grid<S> non_const_struct_grid{3, 4};
+                    const Grid<S> const_struct_grid{4, 3};
+                    Grid<S> non_const_struct_grid{4, 3};
 
                     value_iterator_check_arrow_operator(const_struct_grid.row(0).begin(), non_const_struct_grid.row(0).begin(), 42);
                 }
@@ -1664,7 +1664,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("modifying values")
         {
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
 
             value_iterator_check_modifying_values(non_const_grid.row(0).begin(), test_values);
         }
@@ -1676,7 +1676,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("iterate values")
         {
-            const Grid<int> grid = create_grid_with_test_values(5, 4);
+            const Grid<int> grid = create_grid_with_test_values(4, 5);
             auto row = grid.row(0);
 
             SECTION("traditional for loop")
@@ -1692,10 +1692,10 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("const and non-const tests")
         {
-            const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+            const Grid<int> const_grid = create_grid_with_test_values(4, 5);
             auto const_row = const_grid.row(0);
 
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
             auto non_const_row = non_const_grid.row(0);
 
             SECTION("distance between elements")
@@ -1732,8 +1732,8 @@ TEST_CASE("libaoc: Grid")
                         int x = 42;
                     };
 
-                    const Grid<S> const_struct_grid{3, 4};
-                    Grid<S> non_const_struct_grid{3, 4};
+                    const Grid<S> const_struct_grid{4, 3};
+                    Grid<S> non_const_struct_grid{4, 3};
 
                     value_iterator_check_arrow_operator(const_struct_grid.row(0).rbegin(), non_const_struct_grid.row(0).rbegin(), 42);
                 }
@@ -1754,7 +1754,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("modifying values")
         {
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
 
             value_iterator_check_modifying_values(non_const_grid.row(0).rbegin(), test_values);
         }
@@ -1766,7 +1766,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("iterate values")
         {
-            const Grid<int> grid = create_grid_with_test_values(5, 4);
+            const Grid<int> grid = create_grid_with_test_values(4, 5);
             auto col = grid.col(0);
 
             SECTION("traditional for loop")
@@ -1792,10 +1792,10 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("const and non-const tests")
         {
-            const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+            const Grid<int> const_grid = create_grid_with_test_values(4, 5);
             auto const_col = const_grid.col(0);
 
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
             auto non_const_col = non_const_grid.col(0);
 
             SECTION("distance between elements")
@@ -1832,8 +1832,8 @@ TEST_CASE("libaoc: Grid")
                         int x = 42;
                     };
 
-                    const Grid<S> const_struct_grid{3, 4};
-                    Grid<S> non_const_struct_grid{3, 4};
+                    const Grid<S> const_struct_grid{4, 3};
+                    Grid<S> non_const_struct_grid{4, 3};
 
                     value_iterator_check_arrow_operator(const_struct_grid.col(0).begin(), non_const_struct_grid.col(0).begin(), 42);
                 }
@@ -1854,7 +1854,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("modifying values")
         {
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
 
             value_iterator_check_modifying_values(non_const_grid.col(0).begin(), test_values);
         }
@@ -1866,7 +1866,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("iterate values")
         {
-            const Grid<int> grid = create_grid_with_test_values(5, 4);
+            const Grid<int> grid = create_grid_with_test_values(4, 5);
             auto col = grid.col(0);
 
             SECTION("traditional for loop")
@@ -1892,10 +1892,10 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("const and non-const tests")
         {
-            const Grid<int> const_grid = create_grid_with_test_values(5, 4);
+            const Grid<int> const_grid = create_grid_with_test_values(4, 5);
             auto const_col = const_grid.col(0);
 
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
             auto non_const_col = non_const_grid.col(0);
 
             SECTION("distance between elements")
@@ -1932,8 +1932,8 @@ TEST_CASE("libaoc: Grid")
                         int x = 42;
                     };
 
-                    const Grid<S> const_struct_grid{3, 4};
-                    Grid<S> non_const_struct_grid{3, 4};
+                    const Grid<S> const_struct_grid{4, 3};
+                    Grid<S> non_const_struct_grid{4, 3};
 
                     value_iterator_check_arrow_operator(const_struct_grid.col(0).rbegin(), non_const_struct_grid.col(0).rbegin(), 42);
                 }
@@ -1954,7 +1954,7 @@ TEST_CASE("libaoc: Grid")
 
         SECTION("modifying values")
         {
-            Grid<int> non_const_grid = create_grid_with_test_values(5, 4);
+            Grid<int> non_const_grid = create_grid_with_test_values(4, 5);
 
             value_iterator_check_modifying_values(non_const_grid.col(0).rbegin(), test_values);
         }
