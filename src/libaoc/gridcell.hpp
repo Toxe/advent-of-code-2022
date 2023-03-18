@@ -4,17 +4,14 @@
 
 #include "coords.hpp"
 
-template <typename GridPointer>
-class GridCell : public Coords {
+template <typename GridPointer, typename CoordsType>
+class GridCell : public CoordsType {
 public:
-    GridCell(GridPointer grid, const Coords& coords) : Coords(coords)
+    GridCell(GridPointer grid, const CoordsType& coords) : CoordsType(coords)
     {
         assert(grid != nullptr);
         grid_ = grid;
     }
-
-    [[nodiscard]] int col() const { return x; }
-    [[nodiscard]] int row() const { return y; }
 
     [[nodiscard]] auto& value() { return grid_->at(*this); }
 

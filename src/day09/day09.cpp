@@ -6,13 +6,15 @@
 
 #include "coords.hpp"
 
+using Coords16 = Coords<short>;
+
 struct Rope {
     explicit Rope(const int num_knots) : knots(static_cast<std::size_t>(num_knots)) { }
-    std::vector<Coords> knots;
+    std::vector<Coords16> knots;
 };
 
 struct Motion {
-    Coords delta;
+    Coords16 delta;
     int steps = 0;
 };
 
@@ -30,10 +32,11 @@ Motion parse_motions(const std::string& line)
     }
 }
 
-void perform_follow_motion(const Coords& head, Coords& knot)
+void perform_follow_motion(const Coords16& head, Coords16& knot)
 {
-    const Coords delta{head.x - knot.x, head.y - knot.y};
-    const Coords dist{std::abs(delta.x), std::abs(delta.y)};
+    const Coords16 delta = head - knot;
+    // {static_cast<Coords16::coordinates_type>(head.x - knot.x), static_cast<Coords16::coordinates_type>(head.y - knot.y)};
+    const Coords16 dist{static_cast<Coords16::coordinates_type>(std::abs(delta.x)), static_cast<Coords16::coordinates_type>(std::abs(delta.y))};
 
     if (dist.x != 2 && dist.y != 2)
         return;
@@ -43,7 +46,7 @@ void perform_follow_motion(const Coords& head, Coords& knot)
         (dist.y == 2) ? delta.y / 2 : delta.y);
 }
 
-void perform_motions(Motion motion, Rope& rope, std::vector<Coords>& tail_positions)
+void perform_motions(Motion motion, Rope& rope, std::vector<Coords16>& tail_positions)
 {
     while (motion.steps-- > 0) {
         rope.knots[0] += motion.delta;
@@ -55,7 +58,7 @@ void perform_motions(Motion motion, Rope& rope, std::vector<Coords>& tail_positi
     }
 }
 
-int calc_number_of_tail_positions(std::vector<Coords>& tail_positions)
+int calc_number_of_tail_positions(std::vector<Coords16>& tail_positions)
 {
     std::sort(tail_positions.begin(), tail_positions.end());
     const auto it = std::unique(tail_positions.begin(), tail_positions.end(), [](auto& a, auto& b) { return a == b; });
@@ -65,7 +68,7 @@ int calc_number_of_tail_positions(std::vector<Coords>& tail_positions)
 int do_it(const std::vector<std::string>& lines, const int num_knots)
 {
     Rope rope{num_knots};
-    std::vector<Coords> tail_positions;
+    std::vector<Coords16> tail_positions;
 
     for (const auto& line : lines)
         perform_motions(parse_motions(line), rope, tail_positions);
